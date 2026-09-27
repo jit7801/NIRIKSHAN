@@ -12,6 +12,16 @@ export default defineConfig({
         target: 'http://127.0.0.1:8001',
         changeOrigin: true,
         secure: false,
+        configure: (proxy, _options) => {
+          proxy.on('error', (err, _req, res) => {
+            if (res && !res.headersSent) {
+              res.writeHead(503, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({
+                detail: 'MPLADS Analytical Engine is offline on port 8001. Please run `npm run dev` to start both frontend and backend.'
+              }));
+            }
+          });
+        },
       },
     },
   },

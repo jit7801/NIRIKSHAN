@@ -33,6 +33,18 @@ class SyncManager {
       window.addEventListener('offline', () => this.handleNetworkChange(false));
       // Refresh summary on startup
       this.refreshQueueSummary();
+      // Verify initial engine health
+      this.checkEngineHealth();
+      setInterval(() => this.checkEngineHealth(), 15000);
+    }
+  }
+
+  async checkEngineHealth() {
+    const healthy = await this.pingHealth();
+    if (this.isOnline !== healthy) {
+      this.isOnline = healthy;
+      this.statusMessage = healthy ? 'Engine online' : 'Analytical engine offline (port 8001)';
+      this.notify();
     }
   }
 

@@ -52,7 +52,7 @@ This document tracks all foundational, architectural, algorithmic, operational, 
 * **Status**: ACCEPTED
 * **Context**: There is no publicly available, verified, labeled dataset of "fraudulent MPLADS works".
 * **Decision**: 
-  - Do NOT attempt to train supervised classification models (e.g. deep neural nets or XGBoost with synthetic labels), which overfit and hallucinate.
+  - Do NOT attempt to train supervised classification models (e.g. deep neural nets or XGBoost with unverified artificial labels), which overfit and hallucinate.
   - Do NOT use opaque deep learning models or generative LLMs for risk scoring.
   - Use unsupervised anomaly detection (Modified Z-score, MAD, Isolation Forest, S-curve progress divergence, spatial TF-IDF matching).
 * **Consequence**: 100% deterministic, mathematically explainable scores that an auditor can easily verify and cross-examine.

@@ -27,7 +27,7 @@ export default function DuplicateDiffModal({ pair, onClose }) {
     alert(`Status updated to: ${newStatus}\nResolution logged into audit trail.`);
   };
 
-  return (
+  return (  
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-[2px] p-4 overflow-y-auto">
       <div className="bg-white border border-[#E8E4DC] rounded-2xl w-full max-w-5xl max-h-[92vh] overflow-y-auto shadow-2xl relative my-6">

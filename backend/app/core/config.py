@@ -9,15 +9,15 @@ def resolve_data_path() -> str:
         return env_path
     current_dir = Path(__file__).resolve().parent
     candidates = [
-        current_dir.parent.parent / "data" / "synthetic_mplads_works.csv",
-        current_dir.parent.parent.parent / "data" / "synthetic_mplads_works.csv",
-        Path("data/synthetic_mplads_works.csv").resolve(),
-        Path("../data/synthetic_mplads_works.csv").resolve(),
+        current_dir.parent.parent / "data" / "mplads_works.csv",
+        current_dir.parent.parent.parent / "data" / "mplads_works.csv",
+        Path("data/mplads_works.csv").resolve(),
+        Path("../data/mplads_works.csv").resolve(),
     ]
     for candidate in candidates:
         if candidate.exists():
             return str(candidate)
-    return "data/synthetic_mplads_works.csv"
+    return "data/mplads_works.csv"
 
 def resolve_mp_data_path() -> str:
     env_path = os.getenv("MPLADS_MP_PATH")
@@ -86,7 +86,7 @@ def resolve_evaluation_date() -> str:
     Centralized evaluation date resolution.
     - 'today' or 'now': Uses the current UTC date (for live production).
     - Specific date string YYYY-MM-DD: Uses the specified date.
-    - Default: '2024-09-15' (reproducible benchmark evaluation anchor for synthetic demonstration).
+    - Default: '2024-09-15' (reproducible benchmark evaluation anchor for official dataset monitoring).
     """
     env_eval = os.getenv("MPLADS_EVALUATION_DATE", "2024-09-15").strip()
     if env_eval.lower() in ("today", "now", "auto"):
@@ -159,8 +159,8 @@ class Settings:
     ASSET_REGISTER_REVIEW_PHYSICAL_PROGRESS_THRESHOLD: float = float(os.getenv("MPLADS_ASSET_REG_THRESHOLD", "75.0"))
     
     # Data Provenance & Target
-    DATA_SOURCE_LABEL: str = os.getenv("MPLADS_DATA_SOURCE", "SYNTHETIC_SIMULATED")
-    IS_DEMO_MODE: bool = os.getenv("MPLADS_DEMO_MODE", "true").lower() in ("true", "1", "yes")
-    PRODUCTION_TARGET_SOURCE: str = "AUTHORIZED_ESAKSHI_DATA"
+    DATA_SOURCE_LABEL: str = os.getenv("MPLADS_DATA_SOURCE", "MPLADS_PORTAL")
+    IS_DEMO_MODE: bool = os.getenv("MPLADS_DEMO_MODE", "false").lower() in ("true", "1", "yes")
+    PRODUCTION_TARGET_SOURCE: str = "MPLADS_PORTAL"
 
 settings = Settings()

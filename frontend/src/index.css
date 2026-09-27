@@ -145,18 +145,43 @@ textarea {
   font-family: inherit;
 }
 
-/* Leaflet map light adjustments */
+/* Leaflet map styling */
 .leaflet-container {
   font-family: inherit !important;
   background-color: #F0EDE6 !important;
 }
 .leaflet-popup-content-wrapper {
-  border-radius: 14px !important;
-  box-shadow: 0 8px 24px rgba(75, 60, 50, 0.1) !important;
-  border: 1px solid #E8E4DC !important;
-  padding: 4px !important;
+  border-radius: 16px !important;
+  box-shadow: 0 12px 30px -4px rgba(18, 53, 91, 0.15), 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid #D0E2F4 !important;
+  padding: 0 !important;
   background-color: #FFFFFF !important;
+}
+.leaflet-popup-content {
+  margin: 12px 14px !important;
+  line-height: 1.4 !important;
 }
 .leaflet-popup-tip {
   background-color: #FFFFFF !important;
+}
+.leaflet-container a.leaflet-popup-close-button {
+  top: 8px !important;
+  right: 8px !important;
+  color: #536878 !important;
+  font-size: 16px !important;
+}
+.gov-map-tooltip {
+  background-color: #12355B !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 6px 18px rgba(18, 53, 91, 0.25) !important;
+  padding: 6px 10px !important;
+  font-family: inherit !important;
+}
+.gov-map-tooltip.leaflet-tooltip-top:before {
+  border-top-color: #12355B !important;
+}
+.gov-map-tooltip.leaflet-tooltip-bottom:before {
+  border-bottom-color: #12355B !important;
 }

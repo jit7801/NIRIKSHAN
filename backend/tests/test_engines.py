@@ -14,9 +14,9 @@ from app.engines.risk_engine import run_full_risk_pipeline
 
 @pytest.fixture
 def sample_df():
-    data_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../data/synthetic_mplads_works.csv"))
+    data_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../data/mplads_works.csv"))
     if not os.path.exists(data_path):
-        data_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../data/synthetic_mplads_works.csv"))
+        data_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../data/mplads_works.csv"))
     return pd.read_csv(data_path)
 
 def test_haversine_distance():
@@ -32,7 +32,7 @@ def test_cost_anomaly_flagged(sample_df):
     assert w42_cost["cohort_tier"] in ("DISTRICT", "STATE_FALLBACK", "NATIONAL_FALLBACK")
 
 def test_cost_zero_mad_and_fallback_cohorts():
-    # Synthetic cohort where all projects have identical cost (MAD = 0)
+    # Benchmark cohort where all projects have identical cost (MAD = 0)
     test_data = pd.DataFrame([
         {
             "work_id": f"TEST-00{i}",

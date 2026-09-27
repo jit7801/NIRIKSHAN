@@ -164,7 +164,7 @@ def load_and_run_pipeline():
                 _DATA_CACHE["works"] = top_works
                 _DATA_CACHE["works_map"] = {w["work_id"]: w for w in top_works}
 
-                # Load lightweight benchmark DF for simulation/verification tests
+                # Load benchmark DF for policy verification and live recalibration
                 try:
                     if settings.DATA_PATH and os.path.exists(settings.DATA_PATH):
                         _DATA_CACHE["df"] = pd.read_csv(settings.DATA_PATH)
@@ -180,9 +180,9 @@ def load_and_run_pipeline():
     df = None
     works_candidates = [
         settings.DATA_PATH,
-        "data/synthetic_mplads_works.csv",
-        "../data/synthetic_mplads_works.csv",
-        "../../data/synthetic_mplads_works.csv"
+        "data/mplads_works.csv",
+        "../data/mplads_works.csv",
+        "../../data/mplads_works.csv",
     ]
     for c in works_candidates:
         if c and os.path.exists(c):
@@ -192,7 +192,7 @@ def load_and_run_pipeline():
                     if "source" not in df.columns:
                         df["source"] = "existing"
                     if "data_source" not in df.columns:
-                        df["data_source"] = "SYNTHETIC_SIMULATED"
+                        df["data_source"] = "MPLADS_PORTAL"
                 break
             except Exception:
                 continue
@@ -235,7 +235,7 @@ def load_and_run_pipeline():
         if not w.get("source"):
             w["source"] = "MPLADS.csv" if "MPLADS-CSV" in str(w_id) else "existing"
         if not w.get("data_source"):
-            w["data_source"] = "MPLADS.csv" if "MPLADS-CSV" in str(w_id) else "SYNTHETIC_SIMULATED"
+            w["data_source"] = "MPLADS.csv" if "MPLADS-CSV" in str(w_id) else "MPLADS_PORTAL"
     _DATA_CACHE["works"] = clean_works
     _DATA_CACHE["works_map"] = {w["work_id"]: w for w in clean_works}
     _DATA_CACHE["summary"] = sanitize_for_json(summary)
@@ -596,7 +596,7 @@ def get_filter_options():
         "state_districts": {}
     }
 
-@router.post("/simulate/recalculate")
+@router.post("/policy/recalculate")
 def recalculate_risk_scores(req: RecalculateRequest):
     """Dynamically re-evaluates all scores when policy sliders are adjusted. Rejects invalid weight totals."""
     df = _DATA_CACHE["df"]

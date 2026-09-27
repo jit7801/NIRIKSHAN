@@ -71,7 +71,7 @@ export default function RoleContextBanner({
     MINISTRY: {
       title: "Central Ministry of Statistics & Programme Implementation (MoSPI)",
       designation: "National Oversight Authority",
-      location: "New Delhi (National eSAKSHI Portal)",
+      location: "New Delhi (MoSPI Central Headquarters)",
       badgeColor: "bg-[#4B3C32] text-white",
       accentBg: "bg-white border-[#E8E4DC]",
       icon: ShieldCheck,

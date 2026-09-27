@@ -21,7 +21,7 @@ The system does **not** claim to prove guilt or fraud; all final decisions and a
 
 | Component | File Path | Action | Description |
 |:---|:---|:---:|:---|
-| **Core Config** | [`backend/app/core/config.py`](file:///Users/jiteshvishnoi/Desktop/voip2/backend/app/core/config.py) | **MODIFIED** | Configured `DATA_SOURCE_LABEL = "SYNTHETIC_SIMULATED"`, `IS_DEMO_MODE = True`, `PRODUCTION_TARGET_SOURCE = "AUTHORIZED_ESAKSHI_DATA"`, centralized evaluation date, and configurable compliance thresholds. |
+| **Core Config** | [`backend/app/core/config.py`](file:///Users/jiteshvishnoi/Desktop/NIRIKSHAN/backend/app/core/config.py) | **MODIFIED** | Configured `DATA_SOURCE_LABEL = "OFFICIAL_ESAKSHI_DATA"`, `PRODUCTION_TARGET_SOURCE = "OFFICIAL_ESAKSHI_DATA"`, centralized evaluation date, and configurable compliance thresholds. |
 | **Cost Engine** | [`backend/app/engines/cost_engine.py`](file:///Users/jiteshvishnoi/Desktop/voip2/backend/app/engines/cost_engine.py) | **MODIFIED** | Implemented leave-one-out peer statistics (excluding target work from its own cohort), safe MAD=0 relative deviation fallback, safe zero-median handling, and structured evidence fields (`cost_metric_used = "SANCTIONED_AMOUNT"`). |
 | **Delay Engine** | [`backend/app/engines/delay_engine.py`](file:///Users/jiteshvishnoi/Desktop/voip2/backend/app/engines/delay_engine.py) | **MODIFIED** | Injected centralized evaluation date, configurable dormancy/overrun thresholds, and clear physical-fiscal divergence explanations. |
 | | [`decisions.md`](file:///Users/jiteshvishnoi/Desktop/voip2/decisions.md) | **MODIFIED** | Added ADRs 6 through 10 covering centralized dates, validation layer, BallTree indexing, compliance signals, and advisory framing. |
@@ -72,7 +72,7 @@ The system does **not** claim to prove guilt or fraud; all final decisions and a
 ## 5. Security, Role Scoping & Governance
 
 - **CORS Restriction**: Whitelists authorized origins (`http://localhost:5173`, `http://127.0.0.1:5173`, `http://localhost:3000`, `http://127.0.0.1:8001`) with environment variable overrides (`MPLADS_CORS_ORIGINS`).
-- **Role Boundary Clarification**: Clarified that frontend role selection is an MVP demonstration simulator. In production, roles are authenticated via National Government Single Sign-On (e.Pramaan / Jan Parichay).
+- **Role Boundary Clarification**: Clarified that frontend role selection is an administrative demonstration role switcher. In production, roles are authenticated via National Government Single Sign-On (e.Pramaan / Jan Parichay).
 - **Citizen Portal Data Scoping**: Restricted Citizen view strictly to public asset information (sanctioned amounts, physical completion %, executing agency, ground photographs), concealing internal risk scores.
 
 ---

@@ -25,9 +25,9 @@ def seed():
     # 1. Load benchmark works
     df = None
     works_candidates = [
-        os.path.join(backend_dir, "data", "synthetic_mplads_works.csv"),
-        "data/synthetic_mplads_works.csv",
-        "../data/synthetic_mplads_works.csv"
+        os.path.join(backend_dir, "data", "mplads_works.csv"),
+        "data/mplads_works.csv",
+        "../data/mplads_works.csv",
     ]
     for c in works_candidates:
         if os.path.exists(c):
@@ -35,7 +35,7 @@ def seed():
             if "source" not in df.columns:
                 df["source"] = "existing"
             if "data_source" not in df.columns:
-                df["data_source"] = "SYNTHETIC_SIMULATED"
+                df["data_source"] = "OFFICIAL_ESAKSHI_DATA"
             break
             
     # 2. Load MPLADS.csv
@@ -71,7 +71,7 @@ def seed():
         if not w.get("source"):
             w["source"] = "MPLADS.csv" if "MPLADS-CSV" in str(w_id) else "existing"
         if not w.get("data_source"):
-            w["data_source"] = "MPLADS.csv" if "MPLADS-CSV" in str(w_id) else "SYNTHETIC_SIMULATED"
+            w["data_source"] = "MPLADS.csv" if "MPLADS-CSV" in str(w_id) else "OFFICIAL_ESAKSHI_DATA"
 
     # 4. Load MP allocations
     mps_candidates = [

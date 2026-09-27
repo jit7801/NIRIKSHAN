@@ -314,6 +314,7 @@ function AppContent() {
               /* Focused Work Detail Dossier View */
               <WorkDetailView
                 workId={selectedWorkId}
+                initialWork={works.find((w) => w.work_id === selectedWorkId)}
                 onBack={handleBackToWorks}
                 onOpenDuplicateDiff={handleOpenDuplicateDiff}
                 onViewOnMap={(_wId) => {

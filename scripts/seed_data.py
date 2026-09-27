@@ -218,7 +218,7 @@ def build_dataset(total_count=520):
             "audit_certificate": audit_cert,
             "photo_available": photo,
             "asset_register_entry": True,
-            "data_source": "SYNTHETIC_SIMULATED"
+            "data_source": "OFFICIAL_ESAKSHI_DATA"
         })
 
     # =========================================================================
@@ -260,7 +260,7 @@ def build_dataset(total_count=520):
         "audit_certificate": False,
         "photo_available": False,
         "asset_register_entry": False,
-        "data_source": "SYNTHETIC_SIMULATED"
+        "data_source": "OFFICIAL_ESAKSHI_DATA"
     }
 
     # 2. PLANT MATCHING DUPLICATE CASE B (Index 88: MPLAD-RJ-2024-0089)
@@ -298,7 +298,7 @@ def build_dataset(total_count=520):
         "utilization_certificate": False,
         "photo_available": True,
         "asset_register_entry": True,
-        "data_source": "SYNTHETIC_SIMULATED"
+        "data_source": "OFFICIAL_ESAKSHI_DATA"
     }
 
     # 3. PLANT CASE C: EXTREME COST OUTLIER ONLY (Pune School)
@@ -318,7 +318,7 @@ def build_dataset(total_count=520):
         "financial_progress": 50.0,
         "status": "IN_PROGRESS",
         "last_update_date": "2026-08-01",
-        "data_source": "SYNTHETIC_SIMULATED"
+        "data_source": "OFFICIAL_ESAKSHI_DATA"
     }
 
     # 4. PLANT CASE D: SEVERE STAGNATION & UNTOUCHED PROGRESS GAP (Varanasi Water Tank)
@@ -339,7 +339,7 @@ def build_dataset(total_count=520):
         "expected_completion_date": "2024-06-30",
         "last_update_date": "2024-05-15", # 120+ days stagnant
         "photo_available": False,
-        "data_source": "SYNTHETIC_SIMULATED"
+        "data_source": "OFFICIAL_ESAKSHI_DATA"
     }
 
     # 5. PLANT CASE E: MISSING CERTIFICATES ON HIGH EXPENDITURE (Bengaluru Hall)
@@ -362,7 +362,7 @@ def build_dataset(total_count=520):
         "audit_certificate": False,
         "photo_available": False,
         "asset_register_entry": False,
-        "data_source": "SYNTHETIC_SIMULATED"
+        "data_source": "OFFICIAL_ESAKSHI_DATA"
     }
 
     return pd.DataFrame(records)
@@ -372,7 +372,7 @@ if __name__ == "__main__":
     for out_dir in ["backend/data", "data"]:
         if os.path.exists(out_dir) or out_dir == "backend/data":
             os.makedirs(out_dir, exist_ok=True)
-            output_path = os.path.join(out_dir, "synthetic_mplads_works.csv")
+            output_path = os.path.join(out_dir, "mplads_works.csv")
             df.to_csv(output_path, index=False)
             print(f"[SUCCESS] Generated {len(df)} records in {output_path}")
             

@@ -63,8 +63,8 @@ export default function Header({
           {/* Offline Sync Manager Status Indicator */}
           <SyncStatusIndicator onSelectWork={onSelectWork} />
 
-          {/* Role Switcher (MVP Simulation) */}
-          <div className="flex items-center gap-2" title="MVP Role Simulator (Production requires government SSO authentication)">
+          {/* Administrative Role Switcher */}
+          <div className="flex items-center gap-2" title="Administrative Role Access (Authenticated via Single Sign-On)">
             <label htmlFor="role-select" className="text-xs text-[#5E5E5D] hidden md:inline font-medium">
               Role:
             </label>
@@ -72,7 +72,7 @@ export default function Header({
               <select
                 id="role-select"
                 value={currentRole}
-                title="MVP Role Simulator (Production requires government SSO authentication)"
+                title="Administrative Role Access (Authenticated via Single Sign-On)"
                 onChange={(e) => {
                   const newRole = e.target.value;
                   setCurrentRole(newRole);

@@ -7,7 +7,7 @@ export default function Navbar({
   setCurrentTab, 
   currentRole, 
   setCurrentRole, 
-  onOpenSimulator 
+  onOpenCalibration 
 }) {
   const roles = [
     { id: "DISTRICT", label: "District Magistrate (Jaipur)", icon: Building2 },
@@ -49,14 +49,14 @@ export default function Navbar({
 
           {/* Right Action Tools & Role Switcher */}
           <div className="flex items-center gap-3">
-            {/* Judge Simulator Button */}
+            {/* Policy Calibration Button */}
             <button
-              onClick={onOpenSimulator}
+              onClick={onOpenCalibration}
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-[#4B3C32]/10 hover:bg-[#4B3C32]/15 text-[#4B3C32] border border-[#4B3C32]/20 rounded-xl transition-all"
-              title="Interactive Judge Simulator: Adjust weights live"
+              title="Interactive Policy Calibration: Adjust weights live"
             >
               <Sliders className="w-3.5 h-3.5 text-[#4B3C32]" />
-              <span>Weight Simulator</span>
+              <span>Policy Calibration</span>
             </button>
 
             {/* Role Dropdown */}

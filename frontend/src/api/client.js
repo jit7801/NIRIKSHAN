@@ -22,8 +22,32 @@ export async function fetchWorks(params = {}) {
 }
 
 export async function fetchWorkExplanation(workId) {
-  const res = await fetch(`${API_BASE_URL}/works/${workId}/explanation`);
-  if (!res.ok) throw new Error(`Failed to fetch forensic dossier for ${workId}`);
+  const res = await fetch(`${API_BASE_URL}/works/${encodeURIComponent(workId)}/explanation`);
+  if (!res.ok) {
+    let errorDetail = `Failed to fetch forensic dossier for ${workId} (${res.status})`;
+    try {
+      const errJson = await res.json();
+      errorDetail = errJson.detail?.message || errJson.detail || errorDetail;
+    } catch {}
+    const err = new Error(errorDetail);
+    err.status = res.status;
+    throw err;
+  }
+  return res.json();
+}
+
+export async function fetchWorkById(workId) {
+  const res = await fetch(`${API_BASE_URL}/works/${encodeURIComponent(workId)}`);
+  if (!res.ok) {
+    let errorDetail = `Failed to fetch work record for ${workId} (${res.status})`;
+    try {
+      const errJson = await res.json();
+      errorDetail = errJson.detail?.message || errJson.detail || errorDetail;
+    } catch {}
+    const err = new Error(errorDetail);
+    err.status = res.status;
+    throw err;
+  }
   return res.json();
 }
 
@@ -34,7 +58,7 @@ export async function fetchDuplicateCandidates() {
 }
 
 export async function recalculateRiskWeights(weights) {
-  const res = await fetch(`${API_BASE_URL}/simulate/recalculate`, {
+  const res = await fetch(`${API_BASE_URL}/policy/recalculate`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(weights),

@@ -15,7 +15,7 @@ The **Offline-First Field Verification & Synchronization Layer** enables authori
 ```text
 ┌────────────────────────────────────────────────────────┐
 │             CENTRAL MPLADS INFRASTRUCTURE              │
-│  Central Works Database / Synthetic Prototype Records  │
+│    Central Works Database / Official MPLADS Records    │
 └───────────────────────────┬────────────────────────────┘
                             │
                             ▼
@@ -27,7 +27,7 @@ The **Offline-First Field Verification & Synchronization Layer** enables authori
                             ▼
 ┌────────────────────────────────────────────────────────┐
 │                CENTRAL AI RISK ENGINE                  │
-│   Cost Anomaly · Delay/Stagnation · Duplicate Overlap   │
+│   Cost Anomaly · Delay/Stagnation · Duplicate Overlap  │
 │            Statutory Compliance Intelligence           │
 └───────────────────────────┬────────────────────────────┘
                             │
