@@ -45,7 +45,7 @@ export default function PolicyCalibrationModal({ isOpen, onClose, onWeightsAppli
 
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-[2px] p-4">
+    <div className="fixed inset-0 z-[1050] flex items-center justify-center bg-black/40 backdrop-blur-[2px] p-4">
       <div className="bg-white border border-[#E8E4DC] rounded-2xl w-full max-w-lg shadow-xl p-6 relative">
         
         {/* Header */}

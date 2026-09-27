@@ -27,7 +27,7 @@ export function ToastProvider({ children }) {
       {/* Toast Container */}
       <div 
         aria-live="polite" 
-        className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-[calc(100vw-2rem)] sm:w-auto pointer-events-none"
+        className="fixed bottom-4 right-4 z-[1100] flex flex-col gap-2 max-w-sm w-[calc(100vw-2rem)] sm:w-auto pointer-events-none"
       >
         {toasts.map((toast) => {
           let bg = 'bg-white border-[#E8E4DC] text-[#050505]';

@@ -16,7 +16,7 @@ export default function HelpModal({ isOpen, onClose }) {
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-[2px] p-3 sm:p-4"
+      className="fixed inset-0 z-[1050] flex items-center justify-center bg-black/40 backdrop-blur-[2px] p-3 sm:p-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby="help-modal-title"

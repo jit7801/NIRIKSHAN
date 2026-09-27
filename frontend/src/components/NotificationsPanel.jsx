@@ -17,7 +17,7 @@ export default function NotificationsPanel({
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-start justify-end p-3 sm:p-4 bg-black/20 backdrop-blur-[1px]"
+      className="fixed inset-0 z-[1050] flex items-start justify-end p-3 sm:p-4 bg-black/20 backdrop-blur-[1px]"
       onClick={onClose}
     >
       <div 

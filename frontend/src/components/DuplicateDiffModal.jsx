@@ -27,11 +27,10 @@ export default function DuplicateDiffModal({ pair, onClose }) {
     alert(`Status updated to: ${newStatus}\nResolution logged into audit trail.`);
   };
 
-  return (  
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-[2px] p-4 overflow-y-auto">
+    <div className="fixed inset-0 z-[1050] flex items-center justify-center bg-black/40 backdrop-blur-[2px] p-4 overflow-y-auto">
       <div className="bg-white border border-[#E8E4DC] rounded-2xl w-full max-w-5xl max-h-[92vh] overflow-y-auto shadow-2xl relative my-6">
-        
+
         {/* Header */}
         <div className="p-5 border-b border-[#E8E4DC] flex items-center justify-between bg-[#F7F7F1]/60">
           <div className="flex items-center gap-3">
@@ -43,13 +42,12 @@ export default function DuplicateDiffModal({ pair, onClose }) {
                 <h3 className="text-base font-bold text-[#050505] tracking-tight">
                   Side-by-Side Duplicate / Overlap Investigation
                 </h3>
-                <span className={`px-2 py-0.5 text-[10px] font-bold rounded-lg border ${
-                  status === "VERIFIED_DUPLICATE"
-                    ? "bg-[#C94C4C]/10 text-[#C94C4C] border-[#C94C4C]/25"
-                    : status === "LEGITIMATE_SEPARATE"
+                <span className={`px-2 py-0.5 text-[10px] font-bold rounded-lg border ${status === "VERIFIED_DUPLICATE"
+                  ? "bg-[#C94C4C]/10 text-[#C94C4C] border-[#C94C4C]/25"
+                  : status === "LEGITIMATE_SEPARATE"
                     ? "bg-[#2E8B57]/10 text-[#2E8B57] border-[#2E8B57]/25"
                     : "bg-[#E6A23C]/10 text-[#916540] border-[#E6A23C]/25"
-                }`}>
+                  }`}>
                   {status}
                 </span>
               </div>
@@ -136,7 +134,7 @@ export default function DuplicateDiffModal({ pair, onClose }) {
 
           {/* Side-by-Side Comparison Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            
+
             {/* Work A Column */}
             <div className="p-4 rounded-xl bg-[#F7F7F1]/50 border border-[#E8E4DC]">
               <div className="flex items-center justify-between mb-3 pb-2 border-b border-[#E8E4DC]">

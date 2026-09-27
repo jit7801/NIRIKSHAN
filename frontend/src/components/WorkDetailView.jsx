@@ -240,6 +240,20 @@ export default function WorkDetailView({
       setIsSubmittingAction(false);
       setIsActionModalOpen(false);
       addToast(`Administrative determination recorded for ${dossier.work_id}.`, 'success');
+      setVerifications((prev) => [
+        {
+          verification_id: `DET-${Date.now().toString().slice(-6)}`,
+          created_at: new Date().toISOString(),
+          verification_status: selectedAction.replace(/_/g, ' '),
+          progress: dossier?.physical_progress || 0,
+          sync_status: 'Recorded',
+          user_id: 'District Magistrate / Nodal Authority',
+          remarks: inspectorNotes || `Statutory Order Issued: ${selectedAction.replace(/_/g, ' ')}`,
+          latitude: dossier?.latitude,
+          longitude: dossier?.longitude
+        },
+        ...prev
+      ]);
       setInspectorNotes('');
     }, 600);
   };
@@ -992,7 +1006,7 @@ export default function WorkDetailView({
             </div>
 
             {hasCoords ? (
-              <div className="h-72 w-full rounded-2xl overflow-hidden border border-[#E2E8F0] relative">
+              <div className="h-72 w-full rounded-2xl overflow-hidden border border-[#E2E8F0] relative z-0 isolate">
                 <MapContainer
                   center={[dossier.latitude, dossier.longitude]}
                   zoom={13}
@@ -1160,7 +1174,7 @@ export default function WorkDetailView({
       {/* 11. ACTION DETERMINATION MODAL */}
       {isActionModalOpen && (
         <div 
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-3 sm:p-4"
+          className="fixed inset-0 z-[1050] flex items-center justify-center bg-black/40 backdrop-blur-xs p-3 sm:p-4"
           onClick={() => setIsActionModalOpen(false)}
         >
           <div 

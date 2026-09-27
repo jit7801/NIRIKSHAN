@@ -149,6 +149,8 @@ textarea {
 .leaflet-container {
   font-family: inherit !important;
   background-color: #F0EDE6 !important;
+  z-index: 0 !important;
+  isolation: isolate;
 }
 .leaflet-popup-content-wrapper {
   border-radius: 16px !important;
