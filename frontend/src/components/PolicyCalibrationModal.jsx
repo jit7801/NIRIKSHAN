@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Sliders, RefreshCw, CheckCircle2, Sparkles, HelpCircle } from 'lucide-react';
 import { recalculateRiskWeights } from '../api/client';
 
@@ -44,8 +45,8 @@ export default function PolicyCalibrationModal({ isOpen, onClose, onWeightsAppli
   };
 
 
-  return (
-    <div className="fixed inset-0 z-[1050] flex items-center justify-center bg-black/40 backdrop-blur-[2px] p-4">
+  return typeof document !== 'undefined' ? createPortal(
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-[2px] p-4">
       <div className="bg-white border border-[#E8E4DC] rounded-2xl w-full max-w-lg shadow-xl p-6 relative">
         
         {/* Header */}
@@ -178,6 +179,7 @@ export default function PolicyCalibrationModal({ isOpen, onClose, onWeightsAppli
         </div>
 
       </div>
-    </div>
-  );
+    </div>,
+    document.body
+  ) : null;
 }

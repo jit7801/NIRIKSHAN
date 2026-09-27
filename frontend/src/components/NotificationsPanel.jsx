@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { Bell, AlertOctagon, AlertTriangle, CheckCircle2, ChevronRight, X, Trash2 } from 'lucide-react';
 import RiskBadge from './RiskBadge';
 
@@ -15,9 +16,9 @@ export default function NotificationsPanel({
     .filter((w) => w.overall_risk_score >= 60)
     .slice(0, 10);
 
-  return (
+  return typeof document !== 'undefined' ? createPortal(
     <div 
-      className="fixed inset-0 z-[1050] flex items-start justify-end p-3 sm:p-4 bg-black/20 backdrop-blur-[1px]"
+      className="fixed inset-0 z-[9999] flex items-start justify-end p-3 sm:p-4 bg-black/30 backdrop-blur-[1px]"
       onClick={onClose}
     >
       <div 
@@ -97,6 +98,7 @@ export default function NotificationsPanel({
           </div>
         )}
       </div>
-    </div>
-  );
+    </div>,
+    document.body
+  ) : null;
 }

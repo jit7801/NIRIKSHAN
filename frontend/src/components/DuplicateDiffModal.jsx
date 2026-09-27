@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Copy, MapPin, CheckCircle, AlertTriangle, ArrowRight, ShieldAlert } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
 import L from 'leaflet';
@@ -27,8 +28,8 @@ export default function DuplicateDiffModal({ pair, onClose }) {
     alert(`Status updated to: ${newStatus}\nResolution logged into audit trail.`);
   };
 
-  return (
-    <div className="fixed inset-0 z-[1050] flex items-center justify-center bg-black/40 backdrop-blur-[2px] p-4 overflow-y-auto">
+  return typeof document !== 'undefined' ? createPortal(
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-[2px] p-4 overflow-y-auto">
       <div className="bg-white border border-[#E8E4DC] rounded-2xl w-full max-w-5xl max-h-[92vh] overflow-y-auto shadow-2xl relative my-6">
 
         {/* Header */}
@@ -242,6 +243,7 @@ export default function DuplicateDiffModal({ pair, onClose }) {
         </div>
 
       </div>
-    </div>
-  );
+    </div>,
+    document.body
+  ) : null;
 }

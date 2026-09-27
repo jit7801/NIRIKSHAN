@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { X, HelpCircle, BookOpen, ShieldCheck, Scale, Clock, Copy, FileText, CheckCircle2, ChevronRight } from 'lucide-react';
 
 export default function HelpModal({ isOpen, onClose }) {
@@ -14,9 +15,9 @@ export default function HelpModal({ isOpen, onClose }) {
     { id: 'directives', title: '4. Statutory Field Notices', icon: FileText },
   ];
 
-  return (
+  return typeof document !== 'undefined' ? createPortal(
     <div 
-      className="fixed inset-0 z-[1050] flex items-center justify-center bg-black/40 backdrop-blur-[2px] p-3 sm:p-4"
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-[2px] p-3 sm:p-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby="help-modal-title"
@@ -156,6 +157,7 @@ export default function HelpModal({ isOpen, onClose }) {
           </button>
         </div>
       </div>
-    </div>
-  );
+    </div>,
+    document.body
+  ) : null;
 }

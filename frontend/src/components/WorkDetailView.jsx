@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import RiskBadge from './RiskBadge';
 import { 
   ArrowLeft, 
@@ -1172,9 +1173,9 @@ export default function WorkDetailView({
       ) : null}
 
       {/* 11. ACTION DETERMINATION MODAL */}
-      {isActionModalOpen && (
+      {isActionModalOpen && typeof document !== 'undefined' && createPortal(
         <div 
-          className="fixed inset-0 z-[1050] flex items-center justify-center bg-black/40 backdrop-blur-xs p-3 sm:p-4"
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-xs p-3 sm:p-4"
           onClick={() => setIsActionModalOpen(false)}
         >
           <div 
@@ -1248,7 +1249,8 @@ export default function WorkDetailView({
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
     </div>

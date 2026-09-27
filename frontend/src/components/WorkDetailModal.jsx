@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X, AlertOctagon, TrendingUp, Clock, Copy, FileCheck, Printer, ShieldAlert, ChevronRight } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { fetchWorkExplanation } from '../api/client';
@@ -96,8 +97,10 @@ export default function WorkDetailModal({ workId, onClose, onOpenDuplicateDiff }
     setTimeout(() => printWindow.print(), 250);
   };
 
-  return (
-    <div className="fixed inset-0 z-[1050] flex items-center justify-center bg-black/40 backdrop-blur-[2px] p-4 overflow-y-auto">
+  if (!workId) return null;
+
+  return typeof document !== 'undefined' ? createPortal(
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-[2px] p-4 overflow-y-auto">
       <div className="bg-white border border-[#E8E4DC] rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl relative my-8">
         
         {/* Modal Close Button */}
@@ -409,6 +412,7 @@ export default function WorkDetailModal({ workId, onClose, onOpenDuplicateDiff }
         ) : null}
 
       </div>
-    </div>
-  );
+    </div>,
+    document.body
+  ) : null;
 }

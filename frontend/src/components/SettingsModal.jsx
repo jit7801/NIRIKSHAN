@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Sliders, CheckCircle2, RotateCcw, AlertTriangle, Save } from 'lucide-react';
 import { recalculateRiskWeights } from '../api/client';
 import { useToast } from './Toast';
@@ -71,9 +72,9 @@ export default function SettingsModal({ isOpen, onClose, onWeightsApplied }) {
     addToast('Weights normalized to 100%.', 'info');
   };
 
-  return (
+  return typeof document !== 'undefined' ? createPortal(
     <div 
-      className="fixed inset-0 z-[1050] flex items-center justify-center bg-black/40 backdrop-blur-[2px] p-3 sm:p-4"
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-[2px] p-3 sm:p-4"
       onClick={onClose}
     >
       <div 
@@ -240,6 +241,7 @@ export default function SettingsModal({ isOpen, onClose, onWeightsApplied }) {
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>,
+    document.body
+  ) : null;
 }

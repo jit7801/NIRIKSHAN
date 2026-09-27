@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { User, ShieldCheck, MapPin, Building2, Layers, CheckCircle2, X, RefreshCw, LogOut } from 'lucide-react';
 import { useToast } from './Toast';
 
@@ -65,9 +66,9 @@ export default function UserProfileModal({
     onClose();
   };
 
-  return (
+  return typeof document !== 'undefined' ? createPortal(
     <div 
-      className="fixed inset-0 z-[1050] flex items-center justify-center bg-black/40 backdrop-blur-[2px] p-3 sm:p-4"
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-[2px] p-3 sm:p-4"
       onClick={onClose}
     >
       <div 
@@ -180,6 +181,7 @@ export default function UserProfileModal({
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>,
+    document.body
+  ) : null;
 }
