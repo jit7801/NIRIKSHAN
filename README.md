@@ -1,7 +1,7 @@
 # MPLADS Risk Intelligence Platform
 
 > **Explainable Risk Intelligence & Decision Support Layer for MPLADS Scheme**  
-> Empirical anomaly detection, geospatial duplicate indexing, and explainable decision support for Members of Parliament and District Authorities to monitor public development works, track fund utilization, and prioritize cases for human verification.
+> Empirical anomaly detection, geospatial duplicate indexing, statutory compliance scoring, offline-first field verification, and explainable decision support for Members of Parliament and District Authorities to monitor public development works, track fund utilization, and prioritize cases for human verification.
 
 ---
 
@@ -18,7 +18,7 @@ The **MPLADS Risk Intelligence Platform** operates on ten foundational governmen
 7. **Two-Stage Candidate Pruning**: Scalable $O(N \log N)$ spatial indexing (`BallTree`) to prune candidate pairs before computing expensive string similarities.
 8. **Multi-Tier Cohort Fallbacks**: Prevents misleading scores on small sample sizes by cascading from district to state to national cohorts.
 9. **Role Scoping & Privacy**: Distinct views for District Magistrates, State Nodal Officers, MPs, Central Ministry, and Citizens (with citizen views strictly scoped to public asset data).
-10. **Extensible Production Roadmap**: Ready for authorized government database integration (PostgreSQL / PostGIS and Jan Parichay Single Sign-On).
+10. **Offline-First Field Verification**: Enables ground verification in low-connectivity areas with client-side PWA/IndexedDB storage and central server synchronization with conflict resolution.
 
 ---
 
@@ -40,13 +40,15 @@ MPLADS / Authorized Data
 │ • District/     │ • Centralized   │ • O(N log N)    │ • Disaggregated │
 │   State/National│   Eval Date     │   BallTree      │   statutory     │
 │   cohort tiers  │ • Fiscal vs     │   Spatial Index │   signals       │
-│ • Unit cost     │   physical gap  │ • Sub-word      │ • Completion UC,│
-│   normalization │ • Dormancy &    │   TF-IDF        │   Asset Reg,    │
-│ • Robust MAD &  │   overdue       │   char-ngrams   │   Geo photo     │
-│   Modified Z    │   clocks        │ • Possible      │ • 0–15 score    │
-│ • Isolation     │ • 0–30 delay    │   Overlap       │   breakdown     │
-│   Forest (XAI)  │   score         │   Candidate     │                 │
-│ • 0–30 score    │                 │ • 0–25 score    │                 │
+│   (Leave-one-out│   physical gap  │ • Sub-word      │ • Completion UC,│
+│   statistics)   │ • Dormancy &    │   TF-IDF        │   Asset Reg,    │
+│ • Unit cost     │   overdue       │   char-ngrams   │   Geo photo     │
+│   normalization │   clocks        │ • Possible      │ • 0–15 score    │
+│ • Robust MAD &  │ • 0–30 delay    │   Overlap       │   breakdown     │
+│   Modified Z    │   score         │   Candidate     │                 │
+│ • Isolation     │                 │ • 0–25 score    │                 │
+│   Forest (XAI)  │                 │                 │                 │
+│ • 0–30 score    │                 │                 │                 │
 └─────────────────┴─────────────────┴─────────────────┴─────────────────┘
           ↓
 [ 6. Unified Risk Engine ]
@@ -54,10 +56,13 @@ MPLADS / Authorized Data
    - Forensic Evidence Checklist
    - Advisory Administrative Recommendations
           ↓
-[ 7. Priority Queue & Decision Support ]
-   - Field Inspection Directives
-   - Lok Sabha 543 MP Allocation Directory
-   - Interactive GIS Leaflet Map
+┌───────────────────────────────────┬───────────────────────────────────┐
+│ 7. Priority Queue & Decision UI   │ 8. Offline Field Verification PWA │
+│   - Field Inspection Directives   │   - Offline inspection package    │
+│   - Lok Sabha 543 MP Allocation   │   - Geotagged photo & GPS capture │
+│   - Interactive GIS Leaflet Map   │   - IndexedDB queue & auto-sync   │
+│   - Candidate Duplicate Diff Modal│   - Version conflict resolution   │
+└───────────────────────────────────┴───────────────────────────────────┘
 ```
 
 ---
@@ -65,7 +70,7 @@ MPLADS / Authorized Data
 ## 🛠️ Tech Stack
 
 - **Backend**: Python 3.12+, FastAPI, Uvicorn, Pandas, NumPy, Scikit-learn (`BallTree`, `TfidfVectorizer`, `IsolationForest`), Pytest
-- **Frontend**: React 19, Vite 8, TailwindCSS, Lucide Icons, Leaflet / React-Leaflet, Recharts
+- **Frontend**: React 19, Vite 8, TailwindCSS, Lucide Icons, Leaflet / React-Leaflet, Recharts, Service Workers & IndexedDB (Offline PWA)
 - **Data Architecture**: In-memory analytical cache with isolated repository abstractions ready for PostGIS / PostgreSQL migration.
 
 ---
@@ -84,7 +89,7 @@ cd backend
 # Install dependencies
 pip install -r requirements.txt
 
-# Run full automated test suite (24 tests)
+# Run full automated test suite (38 tests)
 python3 -m pytest tests -v
 
 # Start FastAPI server (runs on http://localhost:8001)
@@ -108,15 +113,23 @@ Access the dashboard at [http://localhost:5173](http://localhost:5173).
 
 ## 🧪 Verification & Test Suite
 
-Run the full automated test suite covering all modules:
+Run the full automated test suite covering all modules and offline sync endpoints:
 ```bash
 python3 -m pytest backend/tests -v
 ```
 
-### Coverage Summary (24 / 24 Passed):
-- `test_validation.py`: Negative amounts detection, India coordinate bounding checks, temporal chronology consistency, clean record pass-through.
-- `test_engines.py`: Haversine distance, leave-one-out multi-tier cohort statistics, zero-MAD safe relative deviation fallback, zero peer median handling, unit cost extraction, delay stagnation, centralized deterministic evaluation date configuration, BallTree duplicate indexing with candidate signal strengths, stage-aware compliance signal disaggregation, unified risk scoring, and 543 MP allocation calculations.
-- `test_api.py`: REST endpoint contracts (`/health`, `/summary`, `/works`, `/explanation`, `/map/layers`, `/mps`, `/states`), coordinate bounds in GeoJSON, and strict Pydantic model weight validation ($\sum = 100$).
+### Coverage Summary (38 / 38 Passed):
+- `test_validation.py` (4 tests): Negative amounts detection, India coordinate bounding checks, temporal chronology consistency, clean record pass-through.
+- `test_engines.py` (13 tests): Haversine distance, leave-one-out multi-tier cohort statistics, zero-MAD safe relative deviation fallback, zero peer median handling, unit cost extraction, delay stagnation, centralized deterministic evaluation date configuration, BallTree duplicate indexing with candidate signal strengths, stage-aware compliance signal disaggregation, unified risk scoring, duplicate signal strength, and 543 MP allocation calculations.
+- `test_api.py` (8 tests): REST endpoint contracts (`/health`, `/summary`, `/works`, `/explanation`, `/map/layers`, `/mps`, `/states`, `/recalculate`), coordinate bounds in GeoJSON, and strict Pydantic model weight validation ($\sum = 100$).
+- `test_verification.py` (7 tests): Offline verification sync endpoints (`/verification/bundle`, `/verification/submit`), idempotency duplicate submission handling, concurrency version conflict detection, invalid progress & coordinate validation, and non-existent project error handling.
+- `test_performance.py` (6 tests): Pagination exactness, full dataset count integrity, backend search performance and accuracy, filtering logic, map GeoJSON optimization, and filter options endpoints.
+
+---
+
+## 📱 Offline-First Field Verification Architecture
+
+For a detailed technical architecture on ground inspection data capture, client-side caching (Service Worker & IndexedDB), sync queues, and central server AI recalculation, see [OFFLINE_SYNC_ARCHITECTURE.md](file:///Users/jiteshvishnoi/Desktop/NIRIKSHAN/OFFLINE_SYNC_ARCHITECTURE.md).
 
 ---
 
@@ -125,9 +138,10 @@ python3 -m pytest backend/tests -v
 - **No Guilt Inferences**: Outputs indicate **Risk Priority Score**, never "Fraud Probability".
 - **No Automatic Punitive Actions**: Directives use *"Review fund-release eligibility according to applicable rules"*, never "Freeze funds".
 - **Human in the Loop**: AI ranks and prioritizes; authorized officers inspect, verify, and decide.
-- **Audit Trail**: Every inspection notice generates a verifiable order draft with ground verification officer assignment.
+- **Audit Trail & Verification Logs**: Every inspection notice generates a verifiable order draft with ground verification officer assignment and timestamped field sync history.
 
 ---
 
 ## 📄 License & Attribution
 Developed for explainable risk intelligence and decision support for public MPLADS development works.
+
