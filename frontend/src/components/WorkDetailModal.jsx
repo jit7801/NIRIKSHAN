@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { X, AlertOctagon, TrendingUp, Clock, Copy, FileCheck, MapPin, Printer, ShieldAlert, CheckCircle2, ChevronRight } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { X, AlertOctagon, TrendingUp, Clock, Copy, FileCheck, Printer, ShieldAlert, ChevronRight } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { fetchWorkExplanation } from '../api/client';
 
@@ -96,26 +97,28 @@ export default function WorkDetailModal({ workId, onClose, onOpenDuplicateDiff }
     setTimeout(() => printWindow.print(), 250);
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="bg-[#111827] border border-slate-700 rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl relative my-8">
+  if (!workId) return null;
+
+  return typeof document !== 'undefined' ? createPortal(
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-[2px] p-4 overflow-y-auto">
+      <div className="bg-white border border-[#E8E4DC] rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl relative my-8">
         
         {/* Modal Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 rounded-lg bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition-colors z-10"
+          className="absolute top-4 right-4 p-2 rounded-xl bg-[#F7F7F1] text-[#5E5E5D] hover:text-[#050505] hover:bg-[#E8E4DC]/40 transition-colors z-10"
         >
           <X className="w-5 h-5" />
         </button>
 
         {loading ? (
-          <div className="p-16 text-center text-slate-400">
-            <div className="inline-block w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mb-3" />
+          <div className="p-16 text-center text-[#5E5E5D]">
+            <div className="inline-block w-8 h-8 border-2 border-[#4B3C32] border-t-transparent rounded-full animate-spin mb-3" />
             <p className="text-sm font-medium">Synthesizing forensic risk dossier...</p>
           </div>
         ) : error ? (
-          <div className="p-8 text-center text-red-400">
-            <AlertOctagon className="w-10 h-10 mx-auto mb-2 text-red-400" />
+          <div className="p-8 text-center text-[#C94C4C]">
+            <AlertOctagon className="w-10 h-10 mx-auto mb-2 text-[#C94C4C]" />
             <p className="text-sm font-medium">Error: {error}</p>
           </div>
         ) : dossier ? (
@@ -124,14 +127,14 @@ export default function WorkDetailModal({ workId, onClose, onOpenDuplicateDiff }
             {/* Header section */}
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <span className="px-2 py-0.5 text-[10px] font-mono font-bold bg-slate-800 text-blue-400 border border-slate-700 rounded">
+                <span className="px-2 py-0.5 text-[10px] font-mono font-bold bg-[#F7F7F1] text-[#4B3C32] border border-[#E8E4DC] rounded-lg">
                   {dossier.work_id}
                 </span>
-                <span className="text-xs text-slate-400">
+                <span className="text-xs text-[#5E5E5D]">
                   {dossier.district}, {dossier.state} • {dossier.work_category}
                 </span>
               </div>
-              <h2 className="text-xl font-bold text-white tracking-tight leading-snug">
+              <h2 className="text-xl font-bold text-[#050505] tracking-tight leading-snug">
                 {dossier.work_title}
               </h2>
             </div>
@@ -140,47 +143,47 @@ export default function WorkDetailModal({ workId, onClose, onOpenDuplicateDiff }
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               
               {/* URS Score Dial Card */}
-              <div className="p-5 rounded-xl bg-slate-900/90 border border-slate-800 flex flex-col items-center justify-center text-center">
-                <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">
+              <div className="p-5 rounded-2xl bg-[#F7F7F1]/60 border border-[#E8E4DC] flex flex-col items-center justify-center text-center">
+                <span className="text-[11px] font-semibold text-[#5E5E5D] uppercase tracking-wider mb-2">
                   Unified Risk Score (URS)
                 </span>
                 <div className="relative flex items-center justify-center my-1">
                   <div className={`w-24 h-24 rounded-full border-4 flex flex-col items-center justify-center ${
                     dossier.overall_risk_score >= 80
-                      ? "border-red-500 text-red-400 bg-red-500/10 pulse-critical"
+                      ? "border-[#C94C4C] text-[#C94C4C] bg-[#C94C4C]/10"
                       : dossier.overall_risk_score >= 60
-                      ? "border-orange-500 text-orange-400 bg-orange-500/10"
-                      : "border-emerald-500 text-emerald-400 bg-emerald-500/10"
+                      ? "border-[#E6A23C] text-[#916540] bg-[#E6A23C]/10"
+                      : "border-[#2E8B57] text-[#2E8B57] bg-[#2E8B57]/10"
                   }`}>
                     <span className="text-3xl font-extrabold tracking-tight">{dossier.overall_risk_score}</span>
                     <span className="text-[9px] font-bold uppercase tracking-wider">{dossier.risk_level}</span>
                   </div>
                 </div>
-                <span className="text-xs font-medium text-slate-400 mt-2">
-                  Primary: <strong className="text-slate-200">{dossier.primary_risk_factor}</strong>
+                <span className="text-xs font-medium text-[#5E5E5D] mt-2">
+                  Primary: <strong className="text-[#050505]">{dossier.primary_risk_factor}</strong>
                 </span>
               </div>
 
               {/* Component Gauges */}
-              <div className="md:col-span-2 p-5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-3">
-                <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
+              <div className="md:col-span-2 p-5 rounded-2xl bg-[#F7F7F1]/60 border border-[#E8E4DC] space-y-3">
+                <span className="text-[11px] font-semibold text-[#5E5E5D] uppercase tracking-wider block">
                   Component Score Breakdown
                 </span>
 
                 {/* Financial Risk */}
                 <div>
                   <div className="flex justify-between text-xs mb-1">
-                    <span className="text-slate-300 font-medium flex items-center gap-1.5">
-                      <TrendingUp className="w-3.5 h-3.5 text-amber-400" /> Financial & Cost Anomaly
+                    <span className="text-[#050505] font-medium flex items-center gap-1.5">
+                      <TrendingUp className="w-3.5 h-3.5 text-[#916540]" /> Financial & Cost Anomaly
                     </span>
-                    <span className="font-mono font-bold text-amber-400">
+                    <span className="font-mono font-bold text-[#916540]">
                       {dossier.component_breakdown.financial_risk.score} / {dossier.component_breakdown.financial_risk.max}
                     </span>
                   </div>
-                  <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                  <div className="w-full bg-[#E8E4DC]/80 h-2 rounded-full overflow-hidden">
                     <div
                       style={{ width: `${(dossier.component_breakdown.financial_risk.score / 30) * 100}%` }}
-                      className="h-full bg-amber-500 rounded-full"
+                      className="h-full bg-[#916540] rounded-full"
                     />
                   </div>
                 </div>
@@ -188,17 +191,17 @@ export default function WorkDetailModal({ workId, onClose, onOpenDuplicateDiff }
                 {/* Delay & Stagnation */}
                 <div>
                   <div className="flex justify-between text-xs mb-1">
-                    <span className="text-slate-300 font-medium flex items-center gap-1.5">
-                      <Clock className="w-3.5 h-3.5 text-orange-400" /> Delay & Progress Disparity
+                    <span className="text-[#050505] font-medium flex items-center gap-1.5">
+                      <Clock className="w-3.5 h-3.5 text-[#AA896C]" /> Delay & Progress Disparity
                     </span>
-                    <span className="font-mono font-bold text-orange-400">
+                    <span className="font-mono font-bold text-[#AA896C]">
                       {dossier.component_breakdown.delay_risk.score} / {dossier.component_breakdown.delay_risk.max}
                     </span>
                   </div>
-                  <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                  <div className="w-full bg-[#E8E4DC]/80 h-2 rounded-full overflow-hidden">
                     <div
                       style={{ width: `${(dossier.component_breakdown.delay_risk.score / 30) * 100}%` }}
-                      className="h-full bg-orange-500 rounded-full"
+                      className="h-full bg-[#AA896C] rounded-full"
                     />
                   </div>
                 </div>
@@ -206,17 +209,17 @@ export default function WorkDetailModal({ workId, onClose, onOpenDuplicateDiff }
                 {/* Duplicate Overlap */}
                 <div>
                   <div className="flex justify-between text-xs mb-1">
-                    <span className="text-slate-300 font-medium flex items-center gap-1.5">
-                      <Copy className="w-3.5 h-3.5 text-purple-400" /> Candidate Duplicate / Overlap
+                    <span className="text-[#050505] font-medium flex items-center gap-1.5">
+                      <Copy className="w-3.5 h-3.5 text-[#4B3C32]" /> Candidate Duplicate / Overlap
                     </span>
-                    <span className="font-mono font-bold text-purple-400">
+                    <span className="font-mono font-bold text-[#4B3C32]">
                       {dossier.component_breakdown.duplicate_risk.score} / {dossier.component_breakdown.duplicate_risk.max}
                     </span>
                   </div>
-                  <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                  <div className="w-full bg-[#E8E4DC]/80 h-2 rounded-full overflow-hidden">
                     <div
                       style={{ width: `${(dossier.component_breakdown.duplicate_risk.score / 25) * 100}%` }}
-                      className="h-full bg-purple-500 rounded-full"
+                      className="h-full bg-[#4B3C32] rounded-full"
                     />
                   </div>
                 </div>
@@ -224,17 +227,17 @@ export default function WorkDetailModal({ workId, onClose, onOpenDuplicateDiff }
                 {/* Compliance Deficit */}
                 <div>
                   <div className="flex justify-between text-xs mb-1">
-                    <span className="text-slate-300 font-medium flex items-center gap-1.5">
-                      <FileCheck className="w-3.5 h-3.5 text-rose-400" /> Statutory Compliance & Certificates
+                    <span className="text-[#050505] font-medium flex items-center gap-1.5">
+                      <FileCheck className="w-3.5 h-3.5 text-[#C94C4C]" /> Statutory Compliance & Certificates
                     </span>
-                    <span className="font-mono font-bold text-rose-400">
+                    <span className="font-mono font-bold text-[#C94C4C]">
                       {dossier.component_breakdown.compliance_risk.score} / {dossier.component_breakdown.compliance_risk.max}
                     </span>
                   </div>
-                  <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                  <div className="w-full bg-[#E8E4DC]/80 h-2 rounded-full overflow-hidden">
                     <div
                       style={{ width: `${(dossier.component_breakdown.compliance_risk.score / 15) * 100}%` }}
-                      className="h-full bg-rose-500 rounded-full"
+                      className="h-full bg-[#C94C4C] rounded-full"
                     />
                   </div>
                 </div>
@@ -244,17 +247,17 @@ export default function WorkDetailModal({ workId, onClose, onOpenDuplicateDiff }
             </div>
 
             {/* "WHY WAS THIS FLAGGED?" Evidence Callout */}
-            <div className="p-5 rounded-xl bg-red-500/10 border border-red-500/20">
+            <div className="p-5 rounded-2xl bg-[#C94C4C]/10 border border-[#C94C4C]/20">
               <div className="flex items-center gap-2 mb-3">
-                <ShieldAlert className="w-5 h-5 text-red-400" />
-                <h4 className="text-sm font-bold text-white uppercase tracking-wide">
+                <ShieldAlert className="w-5 h-5 text-[#C94C4C]" />
+                <h4 className="text-sm font-bold text-[#050505] uppercase tracking-wide">
                   Empirical Evidence: Why Was This Work Flagged?
                 </h4>
               </div>
               <ul className="space-y-2">
                 {dossier.evidence_summary.map((point, idx) => (
-                  <li key={idx} className="flex items-start gap-2 text-xs text-slate-200">
-                    <span className="w-1.5 h-1.5 rounded-full bg-red-400 mt-1.5 shrink-0" />
+                  <li key={idx} className="flex items-start gap-2 text-xs text-[#050505]">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#C94C4C] mt-1.5 shrink-0" />
                     <span>{point}</span>
                   </li>
                 ))}
@@ -263,50 +266,50 @@ export default function WorkDetailModal({ workId, onClose, onOpenDuplicateDiff }
 
             {/* Financial vs Physical Divergence Visualizer */}
             {dossier.delay_evaluation && (
-              <div className="p-5 rounded-xl bg-slate-900/90 border border-slate-800">
-                <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-3">
+              <div className="p-5 rounded-2xl bg-[#F7F7F1]/60 border border-[#E8E4DC]">
+                <span className="text-[11px] font-semibold text-[#5E5E5D] uppercase tracking-wider block mb-3">
                   Progress Disparity Analysis
                 </span>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
                   <div className="space-y-3">
                     <div>
                       <div className="flex justify-between text-xs mb-1">
-                        <span className="text-slate-300">Verified Physical Progress</span>
-                        <span className="font-mono text-emerald-400 font-bold">{dossier.delay_evaluation.physical_progress}%</span>
+                        <span className="text-[#050505]">Verified Physical Progress</span>
+                        <span className="font-mono text-[#2E8B57] font-bold">{dossier.delay_evaluation.physical_progress}%</span>
                       </div>
-                      <div className="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
+                      <div className="w-full bg-[#E8E4DC]/80 h-2.5 rounded-full overflow-hidden">
                         <div
                           style={{ width: `${dossier.delay_evaluation.physical_progress}%` }}
-                          className="h-full bg-emerald-500 rounded-full"
+                          className="h-full bg-[#2E8B57] rounded-full"
                         />
                       </div>
                     </div>
                     <div>
                       <div className="flex justify-between text-xs mb-1">
-                        <span className="text-slate-300">Financial Disbursement</span>
-                        <span className="font-mono text-blue-400 font-bold">{dossier.delay_evaluation.financial_progress}%</span>
+                        <span className="text-[#050505]">Financial Disbursement</span>
+                        <span className="font-mono text-[#AA896C] font-bold">{dossier.delay_evaluation.financial_progress}%</span>
                       </div>
-                      <div className="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
+                      <div className="w-full bg-[#E8E4DC]/80 h-2.5 rounded-full overflow-hidden">
                         <div
                           style={{ width: `${dossier.delay_evaluation.financial_progress}%` }}
-                          className="h-full bg-blue-500 rounded-full"
+                          className="h-full bg-[#AA896C] rounded-full"
                         />
                       </div>
                     </div>
                   </div>
 
-                  <div className="bg-slate-800/60 p-3.5 rounded-lg border border-slate-700/60 text-xs space-y-1.5">
+                  <div className="bg-white p-3.5 rounded-xl border border-[#E8E4DC] text-xs space-y-1.5">
                     <div className="flex justify-between">
-                      <span className="text-slate-400">Mismatch Gap:</span>
-                      <strong className="text-red-400 font-mono">+{dossier.delay_evaluation.progress_gap}%</strong>
+                      <span className="text-[#5E5E5D]">Mismatch Gap:</span>
+                      <strong className="text-[#C94C4C] font-mono">+{dossier.delay_evaluation.progress_gap}%</strong>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-400">Days Since Last Update:</span>
-                      <span className="text-slate-200 font-mono">{dossier.delay_evaluation.days_dormant} days</span>
+                      <span className="text-[#5E5E5D]">Days Since Last Update:</span>
+                      <span className="text-[#050505] font-mono">{dossier.delay_evaluation.days_dormant} days</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-400">Days Past Scheduled Deadline:</span>
-                      <span className="text-slate-200 font-mono">{dossier.delay_evaluation.days_overdue} days</span>
+                      <span className="text-[#5E5E5D]">Days Past Scheduled Deadline:</span>
+                      <span className="text-[#050505] font-mono">{dossier.delay_evaluation.days_overdue} days</span>
                     </div>
                   </div>
                 </div>
@@ -315,19 +318,19 @@ export default function WorkDetailModal({ workId, onClose, onOpenDuplicateDiff }
 
             {/* Peer Cohort Cost Distribution Chart */}
             {dossier.cohort_stats && (
-              <div className="p-5 rounded-xl bg-slate-900/90 border border-slate-800">
+              <div className="p-5 rounded-2xl bg-[#F7F7F1]/60 border border-[#E8E4DC]">
                 <div className="flex items-center justify-between mb-3">
                   <div>
-                    <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
+                    <span className="text-[11px] font-semibold text-[#5E5E5D] uppercase tracking-wider block">
                       Peer Cohort Cost Comparison
                     </span>
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-[#5E5E5D]">
                       Evaluated against {dossier.cohort_stats.sample_size} comparable works in {dossier.district}
                     </p>
                   </div>
                   <div className="text-right font-mono text-xs">
-                    <span className="text-slate-400">Cohort Median: </span>
-                    <strong className="text-slate-200">₹{(dossier.cohort_stats.median / 100000).toFixed(2)}L</strong>
+                    <span className="text-[#5E5E5D]">Cohort Median: </span>
+                    <strong className="text-[#050505]">₹{(dossier.cohort_stats.median / 100000).toFixed(2)}L</strong>
                   </div>
                 </div>
 
@@ -344,15 +347,15 @@ export default function WorkDetailModal({ workId, onClose, onOpenDuplicateDiff }
                       ]}
                       margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
                     >
-                      <XAxis dataKey="name" stroke="#64748b" fontSize={10} />
-                      <YAxis stroke="#64748b" fontSize={10} unit="L" />
+                      <XAxis dataKey="name" stroke="#5E5E5D" fontSize={10} />
+                      <YAxis stroke="#5E5E5D" fontSize={10} unit="L" />
                       <Tooltip
-                        contentStyle={{ backgroundColor: "#1e293b", borderColor: "#334155", borderRadius: "8px", fontSize: "12px" }}
+                        contentStyle={{ backgroundColor: "#FFFFFF", borderColor: "#E8E4DC", borderRadius: "12px", fontSize: "12px", color: "#050505" }}
                         formatter={(val) => [`₹${val.toFixed(2)} Lakhs`, "Sanctioned Cost"]}
                       />
                       <Bar dataKey="cost" radius={[4, 4, 0, 0]}>
                         {[0, 1, 2, 3, 4, 5].map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={index === 5 ? "#ef4444" : "#3b82f6"} />
+                          <Cell key={`cell-${index}`} fill={index === 5 ? "#C94C4C" : "#AA896C"} />
                         ))}
                       </Bar>
                     </BarChart>
@@ -363,21 +366,21 @@ export default function WorkDetailModal({ workId, onClose, onOpenDuplicateDiff }
 
             {/* Candidate Duplicate Link Banner */}
             {dossier.duplicate_match && (
-              <div className="p-4 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-between">
+              <div className="p-4 rounded-2xl bg-[#4B3C32]/10 border border-[#4B3C32]/20 flex items-center justify-between">
                 <div>
                   <div className="flex items-center gap-2">
-                    <Copy className="w-4 h-4 text-purple-400" />
-                    <span className="text-xs font-bold text-white">
+                    <Copy className="w-4 h-4 text-[#4B3C32]" />
+                    <span className="text-xs font-bold text-[#050505]">
                       Nearby Co-Located Asset Detected ({dossier.duplicate_match.distance_meters}m away)
                     </span>
                   </div>
-                  <p className="text-xs text-slate-300 mt-1">
+                  <p className="text-xs text-[#5E5E5D] mt-1">
                     Matching work: <strong>{dossier.duplicate_match.paired_work_id}</strong> — "{dossier.duplicate_match.paired_work.work_title}"
                   </p>
                 </div>
                 <button
                   onClick={() => onOpenDuplicateDiff(dossier.work_id, dossier.duplicate_match.paired_work_id)}
-                  className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold bg-purple-600 hover:bg-purple-500 text-white rounded-lg transition-colors whitespace-nowrap"
+                  className="btn-primary flex items-center gap-1 px-3 py-1.5 text-xs font-semibold whitespace-nowrap"
                 >
                   <span>Compare Side-by-Side</span>
                   <ChevronRight className="w-3.5 h-3.5" />
@@ -386,19 +389,19 @@ export default function WorkDetailModal({ workId, onClose, onOpenDuplicateDiff }
             )}
 
             {/* Action Directive & Print Notice Bar */}
-            <div className="p-5 rounded-xl bg-slate-900 border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="p-5 rounded-2xl bg-[#F7F7F1]/80 border border-[#E8E4DC] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
               <div>
-                <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider block mb-1">
+                <span className="text-[10px] font-bold text-[#4B3C32] uppercase tracking-wider block mb-1">
                   Recommended Administrative Action
                 </span>
-                <p className="text-xs text-slate-200">
+                <p className="text-xs text-[#050505]">
                   {dossier.recommended_action}
                 </p>
               </div>
 
               <button
                 onClick={handlePrintNotice}
-                className="flex items-center gap-2 px-4 py-2 text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white rounded-lg shadow-lg shadow-blue-500/20 transition-all whitespace-nowrap"
+                className="btn-primary flex items-center gap-2 px-4 py-2 text-xs font-bold whitespace-nowrap"
               >
                 <Printer className="w-4 h-4" />
                 <span>Export Field Verification Notice</span>
@@ -409,6 +412,7 @@ export default function WorkDetailModal({ workId, onClose, onOpenDuplicateDiff }
         ) : null}
 
       </div>
-    </div>
-  );
+    </div>,
+    document.body
+  ) : null;
 }

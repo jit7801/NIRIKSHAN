@@ -8,25 +8,29 @@ export default {
     extend: {
       colors: {
         gov: {
-          bg: "#F7F8F6",        // Warm off-white background
+          bg: "#F7F7F1",        // Primary background: calm pastel cream
           surface: "#FFFFFF",   // Pure white surfaces
-          subtle: "#F2F4F7",    // Soft neutral hover / background
-          border: "#E4E7EC",    // Light clean border
-          text: "#1F2933",      // Deep slate primary text
-          muted: "#667085",     // Soft gray secondary text
-          navy: "#183B56",      // Primary brand navy
-          blue: "#2F6F8F",      // Muted blue accent
-          teal: "#4F8A83",      // Soft teal secondary accent
+          subtle: "#F2F0EB",    // Soft warm neutral hover / background
+          border: "#E8E4DC",    // Soft warm border
+          borderStrong: "#C8BFB3", // Secondary neutral border
+          text: "#050505",      // Primary text: deep clean neutral
+          muted: "#5E5E5D",     // Secondary text: muted warm charcoal
+          brown: "#4B3C32",     // Muted dark brown
+          accent: "#AA896C",    // Muted warm accent
+          darkAccent: "#916540",// Dark warm accent
+          navy: "#4B3C32",      // Harmonize legacy navy to muted dark brown
+          blue: "#7A6858",      // Harmonize legacy blue to warm slate brown
+          teal: "#5A7365",      // Harmonize legacy teal
         },
         risk: {
-          low: "#5F8D73",       // Soft sage green
-          medium: "#C49A4A",    // Muted amber
-          high: "#C8754D",      // Muted terracotta / orange
-          critical: "#B85C5C",  // Muted crimson / red
+          low: "#2E8B57",       // SeaGreen semantic low
+          medium: "#E6A23C",    // Warm amber semantic medium
+          high: "#C94C4C",      // Crimson semantic high
+          critical: "#C94C4C",  // Crimson semantic critical
         }
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
       }
     },
   },

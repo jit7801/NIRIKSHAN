@@ -1,141 +1,147 @@
 # MPLADS Risk Intelligence Platform
 
-> **Explainable Risk Intelligence Layer for MPLADS Scheme (SIH26102)**  
-> AI-powered auditing, anomaly detection, and decision-support system for Members of Parliament and District Authorities to monitor MPLADS development works, track fund utilization, and prevent fiscal leakages.
+> **Explainable Risk Intelligence & Decision Support Layer for MPLADS Scheme**  
+> Empirical anomaly detection, geospatial duplicate indexing, statutory compliance scoring, offline-first field verification, and explainable decision support for Members of Parliament and District Authorities to monitor public development works, track fund utilization, and prioritize cases for human verification.
 
 ---
 
-## 📌 Executive Summary
+## 📌 Core Mission & Governance Principles
 
-The **MPLADS Risk Intelligence Platform** provides district administrators and Member of Parliament (MP) representatives with explainable, actionable insights into public development works. It identifies cost anomalies, delays, physical vs. financial progress mismatches, and potential duplicate/overlapping works before funds are disbursed.
+The **MPLADS Risk Intelligence Platform** operates on ten foundational government-technology principles:
 
-### Core Objectives
-* **Pre-empt Waste & Corruption**: Flag high-risk works and duplicate projects before funds are irreversibly committed.
-* **Objective Anomaly Detection**: Benchmark project estimates against historical peer medians across similar work categories and geography.
-* **Explainable AI**: Provide transparent risk breakdowns with exact mathematical justifications, evidence checklists, and inspection directives rather than black-box scores.
-* **End-to-End Governance**: Empower field officers with one-click official verification notices and audit tracking.
+1. **Detects Risk, Not Guilt**: The system identifies risk signals and statistical anomalies; it does **not** claim to automatically prove fraud or wrongdoing.
+2. **Explainable AI (XAI)**: Every risk alert provides empirical, transparent justifications (peer medians, Modified Z-scores, distance metres, progress gaps, missing certificates) rather than black-box outputs.
+3. **Advisory Decisions**: All generated action directives are advisory. Final authority and administrative decisions remain exclusively with authorized human officers.
+4. **Data Coverage & Integrity**: Operates on official MPLADS records combined with structured benchmark cohorts, ensuring accurate evaluation of real-world reporting delays, cost variations, and contractor concentration.
+5. **Calibrated Statistical Methods**: Uses robust statistics (MAD, Modified Z-score, Haversine spatial trees, sub-word TF-IDF) with unsupervised machine learning (Isolation Forest) as a secondary analytical indicator.
+6. **Strict Policy Governance**: Rejection of unnormalized risk weights ($\sum = 100$) and removal of arbitrary punitive actions (e.g. replaced "Freeze funds" with *"Review fund-release eligibility according to applicable rules"*).
+7. **Two-Stage Candidate Pruning**: Scalable $O(N \log N)$ spatial indexing (`BallTree`) to prune candidate pairs before computing expensive string similarities.
+8. **Multi-Tier Cohort Fallbacks**: Prevents misleading scores on small sample sizes by cascading from district to state to national cohorts.
+9. **Role Scoping & Privacy**: Distinct views for District Magistrates, State Nodal Officers, MPs, Central Ministry, and Citizens (with citizen views strictly scoped to public asset data).
+10. **Offline-First Field Verification**: Enables ground verification in low-connectivity areas with client-side PWA/IndexedDB storage and central server synchronization with conflict resolution.
 
 ---
 
 ## 🚀 Key Modules & AI Engines
 
-### 1. Cost & Financial Anomaly Engine
-* **Peer Group Baselining**: Calculates dynamic median costs and standard deviations across matching work categories within districts.
-* **Modified Z-Score & Ratio Testing**: Identifies works deviating drastically (e.g., >80% over median cost) without technical justification.
-* **Financial Mismatch Detection**: Flags projects where financial expenditure heavily outpaces verified ground physical completion (e.g., 82% spent vs. 44% physically built).
-
-### 2. Delay & Dormancy Analytics
-* **Lifecycle Milestone Tracking**: Monitors elapsed time from recommendation to administrative sanction, technical sanction, contractor award, and completion.
-* **Staleness / Dormancy Detection**: Highlights stalled projects with zero recorded physical activity over 90+ days.
-
-### 3. Geospatial & Semantic Duplicate Inspector
-* **Haversine Proximity Clustering**: Calculates precise geographic distance between project coordinates to detect overlapping sites (e.g., works within 150m radius).
-* **TF-IDF & N-gram Text Similarity**: Compares work titles, descriptions, and implementing agencies to surface duplicate sanctions under varied naming conventions.
-* **Dual-Pane Work Dossier**: Interactive side-by-side comparison for field auditors with synchronized maps.
-
-### 4. Unified Risk Scoring & Policy Calibration
-* **Weighted Multi-Dimensional Risk**: Integrates financial, delay, duplication, and compliance risk factors into a normalized 0–100 risk score.
-* **Interactive Policy Weight Tuner**: Allows district collectors to recalibrate engine sensitivities based on local priority directives.
-
-### 5. Field Verification Directives & Audit Registry
-* **Official Order Generation**: Instantly exports standardized field inspection notices with pre-filled work IDs, risk indicators, and site officer assignments.
-* **Immutable Audit Trail**: Tracks historical directives and resolution logs for legislative review.
+```
+MPLADS / Authorized Data
+          ↓
+[ 1. Ingestion Data Validator ]
+   - Work ID uniqueness & format checks
+   - Non-negative expenditure & budget bounds
+   - India coordinate bounding box (Lat: 8–37.5°N, Lon: 68–97.5°E)
+   - Temporal chronology (Sanction ≥ Rec, Start ≥ Sanction, Completion ≥ Start)
+   - Status consistency checks (Completed vs Ongoing)
+          ↓
+┌─────────────────┬─────────────────┬─────────────────┬─────────────────┐
+│ 2. Cost Engine  │ 3. Delay Engine │ 4. Duplicate    │ 5. Compliance   │
+│                 │                 │    Engine       │    Engine       │
+│ • District/     │ • Centralized   │ • O(N log N)    │ • Disaggregated │
+│   State/National│   Eval Date     │   BallTree      │   statutory     │
+│   cohort tiers  │ • Fiscal vs     │   Spatial Index │   signals       │
+│   (Leave-one-out│   physical gap  │ • Sub-word      │ • Completion UC,│
+│   statistics)   │ • Dormancy &    │   TF-IDF        │   Asset Reg,    │
+│ • Unit cost     │   overdue       │   char-ngrams   │   Geo photo     │
+│   normalization │   clocks        │ • Possible      │ • 0–15 score    │
+│ • Robust MAD &  │ • 0–30 delay    │   Overlap       │   breakdown     │
+│   Modified Z    │   score         │   Candidate     │                 │
+│ • Isolation     │                 │ • 0–25 score    │                 │
+│   Forest (XAI)  │                 │                 │                 │
+│ • 0–30 score    │                 │                 │                 │
+└─────────────────┴─────────────────┴─────────────────┴─────────────────┘
+          ↓
+[ 6. Unified Risk Engine ]
+   - 0–100 Risk Priority Score (Low: 0–29, Medium: 30–59, High: 60–79, Critical: 80–100)
+   - Forensic Evidence Checklist
+   - Advisory Administrative Recommendations
+          ↓
+┌───────────────────────────────────┬───────────────────────────────────┐
+│ 7. Priority Queue & Decision UI   │ 8. Offline Field Verification PWA │
+│   - Field Inspection Directives   │   - Offline inspection package    │
+│   - Lok Sabha 543 MP Allocation   │   - Geotagged photo & GPS capture │
+│   - Interactive GIS Leaflet Map   │   - IndexedDB queue & auto-sync   │
+│   - Candidate Duplicate Diff Modal│   - Version conflict resolution   │
+└───────────────────────────────────┴───────────────────────────────────┘
+```
 
 ---
 
-## 🛠️ Architecture & Tech Stack
+## 🛠️ Tech Stack
 
-```
-voip2/
-├── backend/                  # FastAPI Application
-│   ├── app/
-│   │   ├── api/v1/           # REST endpoints (/works, /analytics, /duplicates, /reports)
-│   │   ├── core/             # Configuration and policy thresholds
-│   │   └── engines/          # Risk, Cost, Delay, and Duplicate algorithms
-│   ├── tests/                # Pytest engine validation suite
-│   ├── main.py               # Application entrypoint & startup pipeline
-│   └── requirements.txt      # Python dependencies
-├── frontend/                 # Modern React Dashboard
-│   ├── src/
-│   │   ├── components/       # UI Views (Overview, Dossier, Map, Duplicates, Policy)
-│   │   ├── api/              # API Client & endpoint hooks
-│   │   └── App.jsx           # Root layout & routing
-│   ├── package.json          # Node dependencies
-│   └── vite.config.js        # Vite build configuration
-├── data/                     # Seed datasets & synthetic test distributions
-├── scripts/                  # Data generators & migration scripts
-└── walkthrough.md            # Detailed visual verification & UI walkthrough
-```
-
-### Technology Highlights
-* **Backend**: Python 3.12+, FastAPI, Uvicorn, Pandas, NumPy, Scikit-learn, Pytest
-* **Frontend**: React 19, Vite, TailwindCSS, Lucide Icons, Leaflet / React-Leaflet, Recharts
+- **Backend**: Python 3.12+, FastAPI, Uvicorn, Pandas, NumPy, Scikit-learn (`BallTree`, `TfidfVectorizer`, `IsolationForest`), Pytest
+- **Frontend**: React 19, Vite 8, TailwindCSS, Lucide Icons, Leaflet / React-Leaflet, Recharts, Service Workers & IndexedDB (Offline PWA)
+- **Data Architecture**: In-memory analytical cache with isolated repository abstractions ready for PostGIS / PostgreSQL migration.
 
 ---
 
 ## ⚡ Quickstart Guide
 
-### Prerequisites
-* Python 3.10+
-* Node.js 18+ and npm
+### 1. Prerequisites
+- Python 3.10+
+- Node.js 18+ and npm
 
-### 1. Backend Setup
-
+### 2. Backend Setup
 ```bash
-# Navigate to backend directory
+# Navigate to backend
 cd backend
-
-# (Optional) Create and activate virtual environment
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
 
-# Run backend test suite
-pytest tests/
+# Run full automated test suite (38 tests)
+python3 -m pytest tests -v
 
-# Launch API server (runs on http://localhost:8001)
-uvicorn main:app --host 0.0.0.0 --port 8001 --reload
+# Start FastAPI server (runs on http://localhost:8001)
+python3 -m uvicorn main:app --host 0.0.0.0 --port 8001 --reload
 ```
+API Documentation:
+- Swagger UI: [http://localhost:8001/docs](http://localhost:8001/docs)
+- ReDoc: [http://localhost:8001/redoc](http://localhost:8001/redoc)
 
-Interactive API documentation will be available at:
-* Swagger UI: [http://localhost:8001/docs](http://localhost:8001/docs)
-* Redoc: [http://localhost:8001/redoc](http://localhost:8001/redoc)
-
-### 2. Frontend Setup
-
+### 3. Frontend Setup
 ```bash
-# In a separate terminal, navigate to frontend directory
-cd frontend
-
-# Install packages
-npm install
-
-# Launch Vite development server (runs on http://localhost:5173)
+# From workspace root or inside frontend/
 npm run dev
-```
 
-Open [http://localhost:5173](http://localhost:5173) in your browser to access the dashboard.
+# Or for production bundle build:
+npm run build
+```
+Access the dashboard at [http://localhost:5173](http://localhost:5173).
 
 ---
 
-## 🧪 Verification & Testing
+## 🧪 Verification & Test Suite
 
-Run the automated backend test suite to verify algorithm correctness across all four intelligence modules:
-
+Run the full automated test suite covering all modules and offline sync endpoints:
 ```bash
 python3 -m pytest backend/tests -v
 ```
 
-Tests validate:
-* Cost anomaly IQR/median outlier classification
-* Milestone delay and stagnation penalty curves
-* Haversine distance and TF-IDF duplicate scoring
-* Unified risk normalization and policy weight bounds
+### Coverage Summary (38 / 38 Passed):
+- `test_validation.py` (4 tests): Negative amounts detection, India coordinate bounding checks, temporal chronology consistency, clean record pass-through.
+- `test_engines.py` (13 tests): Haversine distance, leave-one-out multi-tier cohort statistics, zero-MAD safe relative deviation fallback, zero peer median handling, unit cost extraction, delay stagnation, centralized deterministic evaluation date configuration, BallTree duplicate indexing with candidate signal strengths, stage-aware compliance signal disaggregation, unified risk scoring, duplicate signal strength, and 543 MP allocation calculations.
+- `test_api.py` (8 tests): REST endpoint contracts (`/health`, `/summary`, `/works`, `/explanation`, `/map/layers`, `/mps`, `/states`, `/recalculate`), coordinate bounds in GeoJSON, and strict Pydantic model weight validation ($\sum = 100$).
+- `test_verification.py` (7 tests): Offline verification sync endpoints (`/verification/bundle`, `/verification/submit`), idempotency duplicate submission handling, concurrency version conflict detection, invalid progress & coordinate validation, and non-existent project error handling.
+- `test_performance.py` (6 tests): Pagination exactness, full dataset count integrity, backend search performance and accuracy, filtering logic, map GeoJSON optimization, and filter options endpoints.
+
+---
+
+## 📱 Offline-First Field Verification Architecture
+
+For a detailed technical architecture on ground inspection data capture, client-side caching (Service Worker & IndexedDB), sync queues, and central server AI recalculation, see [OFFLINE_SYNC_ARCHITECTURE.md](file:///Users/jiteshvishnoi/Desktop/NIRIKSHAN/OFFLINE_SYNC_ARCHITECTURE.md).
+
+---
+
+## ⚖️ Governance & Ethical Safeguards
+
+- **No Guilt Inferences**: Outputs indicate **Risk Priority Score**, never "Fraud Probability".
+- **No Automatic Punitive Actions**: Directives use *"Review fund-release eligibility according to applicable rules"*, never "Freeze funds".
+- **Human in the Loop**: AI ranks and prioritizes; authorized officers inspect, verify, and decide.
+- **Audit Trail & Verification Logs**: Every inspection notice generates a verifiable order draft with ground verification officer assignment and timestamped field sync history.
 
 ---
 
 ## 📄 License & Attribution
+Developed for explainable risk intelligence and decision support for public MPLADS development works.
 
-Developed for the **Smart India Hackathon (SIH26102)** problem statement on MPLADS project intelligence and monitoring.

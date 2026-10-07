@@ -1,5 +1,5 @@
 # Architecture Decision Records & Engineering Log (`decisions.md`)
-## Project: Explainable Risk Intelligence Layer for MPLADS (SIH26102)
+## Project: Explainable Risk Intelligence Layer for MPLADS
 
 This document tracks all foundational, architectural, algorithmic, operational, and UX design decisions made during the conception and implementation of the project.
 
@@ -28,21 +28,22 @@ This document tracks all foundational, architectural, algorithmic, operational, 
 * **Context**: Comparing cost across diverse infrastructure categories (e.g. ₹40L for a hospital wing vs ₹40L for a tube well) causes extreme false positives.
 * **Decision**: 
   - Partition works into fine-grained cohorts: $\text{Category} \times \text{District}$.
-  - Fall back to $\text{Category} \times \text{State}$ only if sample size $N < 5$.
-  - Use **Modified Z-Scores** with **Median Absolute Deviation (MAD)** instead of standard standard deviation, since mean and standard deviation are heavily skewed by extreme outliers.
-  - Layer an unsupervised **Isolation Forest** to catch multi-dimensional rate abnormalities (e.g., cost per progress unit).
+  - Fall back to $\text{Category} \times \text{State}$ if sample size $N < 5$, then national $\text{Category}$, and finally `INSUFFICIENT_PEER_DATA` if still $< 5$.
+  - Use **Modified Z-Scores** with **Median Absolute Deviation (MAD)** instead of standard standard deviation, handling zero-MAD conditions gracefully.
+  - Layer an unsupervised **Isolation Forest** to flag multi-dimensional rate abnormalities (e.g., cost per progress unit) as a transparent secondary analytical signal.
 * **Consequence**: Minimizes false alerts and guarantees that road projects are only judged against comparable local road projects.
 
 ---
 
-### Record 3: Two-Stage Geospatial Duplicate Filtering
+### Record 3: Two-Stage Geospatial Duplicate Filtering with BallTree Indexing
 * **Date**: September 2026
 * **Status**: ACCEPTED
 * **Context**: All-pairs comparison across thousands of works ($O(N^2)$) induces severe latency and computational bottlenecks.
 * **Decision**: 
-  - **Stage 1 (Spatial Pruning)**: Calculate pairwise distance using coordinate bounding boxes / Haversine formula; immediately discard any pair with distance $>150\text{ metres}$.
-  - **Stage 2 (NLP & Metadata Match)**: Run character and word n-gram $(1, 3)$ TF-IDF cosine similarity exclusively on the pruned spatial candidates, corroborated with category, implementing agency, and budget ratio.
-* **Consequence**: Reduces pairwise computations by over $99.5\%$, delivering instant sub-second response times even with thousands of works.
+  - **Stage 1 (Spatial Indexing)**: Use Scikit-learn `BallTree(metric='haversine')` to prune candidate pairs in $O(N \log N)$ time based on geographic coordinates within `SPATIAL_RADIUS_METERS` (default 150m).
+  - **Stage 2 (NLP & Metadata Match)**: Run sub-word character n-gram $(3, 5)$ TF-IDF cosine similarity exclusively on the pruned spatial candidates, corroborated with category, implementing agency, and budget ratio.
+  - **Governance Label**: Designate matches strictly as **`POSSIBLE DUPLICATE / OVERLAP — VERIFY`**.
+* **Consequence**: Scales candidate generation logarithmically, eliminates unnecessary string comparisons, and adheres to administrative verification standards.
 
 ---
 
@@ -51,63 +52,76 @@ This document tracks all foundational, architectural, algorithmic, operational, 
 * **Status**: ACCEPTED
 * **Context**: There is no publicly available, verified, labeled dataset of "fraudulent MPLADS works".
 * **Decision**: 
-  - Do NOT attempt to train supervised classification models (e.g. deep neural nets or XGBoost with synthetic labels), which overfit and hallucinate.
+  - Do NOT attempt to train supervised classification models (e.g. deep neural nets or XGBoost with unverified artificial labels), which overfit and hallucinate.
   - Do NOT use opaque deep learning models or generative LLMs for risk scoring.
   - Use unsupervised anomaly detection (Modified Z-score, MAD, Isolation Forest, S-curve progress divergence, spatial TF-IDF matching).
 * **Consequence**: 100% deterministic, mathematically explainable scores that an auditor can easily verify and cross-examine.
 
 ---
 
-### Record 5: Hybrid Data Ingestion Strategy
+### Record 5: Pre-Computed In-Memory Cache with Isolated Repository Abstraction
 * **Date**: September 2026
 * **Status**: ACCEPTED
-* **Context**: Direct live API access to internal government eSAKSHI servers is restricted to authenticated NIC credentials during the hackathon.
+* **Context**: Microsecond response times are required during high-stakes SIH live demonstrations across 520 works and 543 Lok Sabha MP records.
 * **Decision**: 
-  - Implement a 2-tier hybrid data architecture:
-    1. Real public baseline data (district names, MP constituencies, standard categories, public summary figures from data.gov.in).
-    2. High-fidelity synthetic dataset generated by `seed_data.py` mirroring real statistical distributions and incorporating planted, verifiable test anomalies (e.g. the "Triple Threat" case `MPLAD-RJ-2024-0042`).
-  - Maintain a mandatory `data_source` attribute (`REAL_PUBLIC` vs `SYNTHETIC_SIMULATED`) on every single record.
-* **Consequence**: Complete presentation integrity; judges can clearly see the distinction, while the backend remains 100% compatible with real eSAKSHI data exports.
+  - Load and run the analytical pipeline once during application startup in FastAPI's `lifespan` handler.
+  - Store results in an in-memory dictionary cache (`_DATA_CACHE`) for $O(1)$ query retrieval.
+  - Isolate data access logic from business logic to support a seamless drop-in transition to PostgreSQL / PostGIS in production.
+* **Consequence**: Pre-computing analytical pipelines into memory eliminates redundant runtime recalculations for all standard queries during high-concurrency demonstrations.
 
 ---
 
-### Record 6: Normalized 0–100 Unified Risk Score (URS) Architecture
+### Record 6: Centralized Evaluation Date & Temporal Anchoring
 * **Date**: September 2026
 * **Status**: ACCEPTED
-* **Context**: Officials need an intuitive, consolidated prioritization index, but cannot trust an unweighted single number without component visibility.
+* **Context**: Hard-coding dates in individual engine methods causes temporal skew across different analytical runs.
 * **Decision**:
-  - Financial Risk: 30% max weight
-  - Delay & Stagnation Risk: 30% max weight
-  - Duplicate / Overlap Risk: 25% max weight
-  - Compliance Deficit: 15% max weight
-  - Total: 100 points maximum.
-  - Provide a dynamic adjustment API (`/simulate/recalculate`) so judges can test custom policy weightings.
-* **Consequence**: Clear, interpretable score tiers: Low (0–29), Medium (30–59), High (60–79), Critical (80–100).
+  - Centralize `EVALUATION_DATE` in `Settings` with environment variable override (`MPLADS_EVALUATION_DATE`).
+  - Support `"today"` / `"now"` for live production, and fixed historical dates for reproducible benchmark tests and hackathon demonstrations.
+* **Consequence**: Consistent calculation of dormancy and overdue clocks across all services and tests.
 
 ---
 
-### Record 7: Role-Based Intelligence Views
+### Record 7: Data Ingestion Validation Layer
 * **Date**: September 2026
 * **Status**: ACCEPTED
-* **Context**: Different stakeholders have fundamentally different oversight mandates and data clearance levels.
-* **Decision**: Implement role switching across 5 profiles:
-  - **District Magistrate (DM)**: Focuses on today's local priority alerts, contractor inquiries, and field verification orders.
-  - **State Nodal Officer**: Focuses on inter-district heatmaps, delay bottlenecks, and state-wide agency performance.
-  - **Member of Parliament (MP)**: Focuses on their constituency's ongoing works, expenditure utilization, and delivery status.
-  - **Central Ministry (MoSPI)**: Focuses on national trends, systemic anomalies, and state fund utilization.
-  - **Citizen View**: Displays public accountability data (project cost, location, photos, progress) while shielding sensitive internal risk intelligence.
-* **Consequence**: Real-world administrative alignment without building complex separate apps.
-
----
-
-### Record 8: Full-Stack Web Technology Selection
-* **Date**: September 2026
-* **Status**: ACCEPTED
-* **Context**: Fast, rock-solid execution suitable for a 6-student team with zero deployment barriers.
+* **Context**: Raw public works data often contains corrupted coordinates, negative budget entries, or reversed milestone dates.
 * **Decision**:
-  - **Frontend**: React 18 + Vite + Tailwind CSS.
-  - **Mapping**: Leaflet + OpenStreetMap (no paid API keys required, works seamlessly offline/online).
-  - **Visualizations**: Recharts for interactive histograms, gauges, and comparison charts.
-  - **Backend**: Python 3.11 + FastAPI + Uvicorn for asynchronous speed and automatic OpenAPI docs.
-  - **Data Engine**: Pandas, NumPy, Scikit-learn, SciPy.
-* **Consequence**: Modern, wow-factor UI with immediate local execution and zero external subscription costs.
+  - Introduce `data_validator.py` executing prior to risk scoring.
+  - Validates work ID uniqueness, positive financial amounts, India geographic coordinates ($8.0^\circ\text{N} \le \text{lat} \le 37.5^\circ\text{N}$, $68.0^\circ\text{E} \le \text{lon} \le 97.5^\circ\text{E}$), chronological milestone sequences, and status consistency.
+  - Attaches `data_quality_warnings` to each record without destructive modification of source records.
+* **Consequence**: Corrupted or edge-case records are surfaced transparently to auditors rather than failing silently or causing crashes.
+
+---
+
+### Record 8: Disaggregated Statutory Compliance Signals
+* **Date**: September 2026
+* **Status**: ACCEPTED
+* **Context**: Merged compliance scores obscure which exact certificates are missing.
+* **Decision**:
+  - Separate compliance into discrete boolean indicators: `missing_completion_certificate`, `missing_utilization_certificate`, `missing_audit_certificate`, `missing_photo`, and `missing_asset_register`.
+  - Cap compliance risk score at 15 points.
+* **Consequence**: Direct, actionable statutory citations that field officers can immediately fulfill.
+
+---
+
+### Record 9: Strict Policy Weight Validation ($\sum = 100$)
+* **Date**: September 2026
+* **Status**: ACCEPTED
+* **Context**: Unconstrained slider inputs can produce arbitrary risk score totals exceeding 100.
+* **Decision**:
+  - Implement Pydantic `model_validator` enforcing $\sum \text{weights} = 100.0$.
+  - Reject invalid configurations with HTTP 422 Unprocessable Entity.
+  - Provide auto-normalization utility in frontend settings modal.
+* **Consequence**: Mathematically guarantees that Unified Risk Scores remain strictly normalized between 0 and 100.
+
+---
+
+### Record 10: Advisory Action Recommendations
+* **Date**: September 2026
+* **Status**: ACCEPTED
+* **Context**: Automated systems instructing punitive measures (e.g. "Freeze funds") violate statutory administrative guidelines.
+* **Decision**:
+  - Reframe all action directives as advisory recommendations: *"Review fund-release eligibility according to applicable rules and pending documentation."*
+  - Include explicit administrative authority disclaimers on every dossier.
+* **Consequence**: High ethical alignment, compliance with government norms, and protection against premature administrative overreach.

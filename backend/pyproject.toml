@@ -1,7 +1,7 @@
 [project]
 name = "mplads-backend"
 version = "1.0.0"
-description = "Explainable Risk Intelligence Layer for MPLADS Scheme (SIH26102)"
+description = "Explainable Risk Intelligence Layer for MPLADS Scheme"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [

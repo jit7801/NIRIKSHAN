@@ -93,22 +93,22 @@ export default function WorksTable({ works, onSelectWork }) {
   };
 
   const getScoreColor = (score) => {
-    if (score >= 80) return "text-red-400 bg-red-500/10 border-red-500/20";
-    if (score >= 60) return "text-orange-400 bg-orange-500/10 border-orange-500/20";
-    if (score >= 30) return "text-amber-400 bg-amber-500/10 border-amber-500/20";
-    return "text-emerald-400 bg-emerald-500/10 border-emerald-500/20";
+    if (score >= 80) return "text-[#C94C4C] bg-[#FDF2F2] border-[#F2C2C2]";
+    if (score >= 60) return "text-[#C94C4C] bg-[#FDF2F2] border-[#F2C2C2]";
+    if (score >= 30) return "text-[#916540] bg-[#FFFBEB] border-[#E8E4DC]";
+    return "text-[#2E8B57] bg-[#F0F8F4] border-[#C2E0D0]";
   };
 
   return (
-    <div className="glass-panel rounded-xl p-5 border border-slate-800">
+    <div className="gov-card p-6 border border-[#E8E4DC]">
       
       {/* Header Controls Bar */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-5">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
         <div>
-          <h3 className="text-base font-bold text-white tracking-tight">
+          <h3 className="text-base font-semibold text-[#050505] tracking-tight">
             Master Risk Work Queue
           </h3>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-[#5E5E5D] mt-0.5">
             Showing {filteredWorks.length} of {works.length} monitored infrastructure works.
           </p>
         </div>
@@ -116,7 +116,7 @@ export default function WorksTable({ works, onSelectWork }) {
         {/* Search & Export Buttons */}
         <div className="flex items-center gap-2.5 w-full md:w-auto">
           <div className="relative flex-1 md:w-64">
-            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
+            <Search className="w-3.5 h-3.5 text-[#5E5E5D] absolute left-3 top-2.5" />
             <input
               type="text"
               placeholder="Search title, ID, district..."
@@ -125,22 +125,22 @@ export default function WorksTable({ works, onSelectWork }) {
                 setSearch(e.target.value);
                 setCurrentPage(1);
               }}
-              className="w-full bg-slate-900 text-xs text-slate-200 pl-8 pr-3 py-1.5 rounded-lg border border-slate-700 focus:outline-none focus:border-blue-500"
+              className="w-full bg-[#F7F7F1] text-xs text-[#050505] pl-8 pr-3 py-2 rounded-xl border border-[#E8E4DC] focus:outline-none focus:border-[#4B3C32] transition-colors"
             />
           </div>
 
           <button
             onClick={exportCSV}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-200 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg transition-colors whitespace-nowrap"
+            className="btn-secondary text-xs flex items-center gap-1.5 py-2 px-3 whitespace-nowrap"
           >
-            <Download className="w-3.5 h-3.5" />
+            <Download className="w-3.5 h-3.5 text-[#5E5E5D]" />
             <span>Export CSV</span>
           </button>
         </div>
       </div>
 
       {/* Filter Bar */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-4 p-3 rounded-lg bg-slate-900/60 border border-slate-800">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-5 p-3.5 rounded-xl bg-[#F7F7F1] border border-[#E8E4DC]">
         <select
           value={selectedState}
           onChange={(e) => {
@@ -148,7 +148,7 @@ export default function WorksTable({ works, onSelectWork }) {
             setSelectedDistrict("");
             setCurrentPage(1);
           }}
-          className="bg-slate-800 text-slate-300 text-xs rounded px-2.5 py-1.5 border border-slate-700 focus:outline-none"
+          className="bg-white text-[#050505] text-xs rounded-lg px-3 py-1.5 border border-[#E8E4DC] focus:outline-none focus:border-[#4B3C32]"
         >
           <option value="">All States</option>
           {states.map((s) => (
@@ -162,7 +162,7 @@ export default function WorksTable({ works, onSelectWork }) {
             setSelectedDistrict(e.target.value);
             setCurrentPage(1);
           }}
-          className="bg-slate-800 text-slate-300 text-xs rounded px-2.5 py-1.5 border border-slate-700 focus:outline-none"
+          className="bg-white text-[#050505] text-xs rounded-lg px-3 py-1.5 border border-[#E8E4DC] focus:outline-none focus:border-[#4B3C32]"
         >
           <option value="">All Districts</option>
           {districts.map((d) => (
@@ -176,7 +176,7 @@ export default function WorksTable({ works, onSelectWork }) {
             setSelectedCategory(e.target.value);
             setCurrentPage(1);
           }}
-          className="bg-slate-800 text-slate-300 text-xs rounded px-2.5 py-1.5 border border-slate-700 focus:outline-none"
+          className="bg-white text-[#050505] text-xs rounded-lg px-3 py-1.5 border border-[#E8E4DC] focus:outline-none focus:border-[#4B3C32]"
         >
           <option value="">All Categories</option>
           {categories.map((c) => (
@@ -190,7 +190,7 @@ export default function WorksTable({ works, onSelectWork }) {
             setSelectedRisk(e.target.value);
             setCurrentPage(1);
           }}
-          className="bg-slate-800 text-slate-300 text-xs rounded px-2.5 py-1.5 border border-slate-700 focus:outline-none"
+          className="bg-white text-[#050505] text-xs rounded-lg px-3 py-1.5 border border-[#E8E4DC] focus:outline-none focus:border-[#4B3C32]"
         >
           <option value="">All Risk Tiers</option>
           <option value="CRITICAL">Critical (80–100)</option>
@@ -201,86 +201,86 @@ export default function WorksTable({ works, onSelectWork }) {
       </div>
 
       {/* Main Table */}
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto rounded-xl border border-[#E8E4DC]">
         <table className="w-full text-left text-xs border-collapse">
           <thead>
-            <tr className="border-b border-slate-800 text-slate-400 font-semibold uppercase tracking-wider text-[10px]">
-              <th className="py-2.5 px-3">
-                <button onClick={() => toggleSort("overall_risk_score")} className="flex items-center gap-1 hover:text-white">
+            <tr className="border-b border-[#E8E4DC] bg-[#F7F7F1] text-[#5E5E5D] font-semibold text-[11px]">
+              <th className="py-3 px-3.5">
+                <button onClick={() => toggleSort("overall_risk_score")} className="flex items-center gap-1 hover:text-[#050505]">
                   <span>Score</span>
                   <ArrowUpDown className="w-3 h-3" />
                 </button>
               </th>
-              <th className="py-2.5 px-3">Project Title & ID</th>
-              <th className="py-2.5 px-3">District</th>
-              <th className="py-2.5 px-3">Category</th>
-              <th className="py-2.5 px-3">
-                <button onClick={() => toggleSort("sanctioned_amount")} className="flex items-center gap-1 hover:text-white">
+              <th className="py-3 px-3.5">Project Title & ID</th>
+              <th className="py-3 px-3.5">District</th>
+              <th className="py-3 px-3.5">Category</th>
+              <th className="py-3 px-3.5">
+                <button onClick={() => toggleSort("sanctioned_amount")} className="flex items-center gap-1 hover:text-[#050505]">
                   <span>Cost (₹)</span>
                   <ArrowUpDown className="w-3 h-3" />
                 </button>
               </th>
-              <th className="py-2.5 px-3">Progress (Phys vs Fin)</th>
-              <th className="py-2.5 px-3">Status</th>
-              <th className="py-2.5 px-3 text-right">Inspect</th>
+              <th className="py-3 px-3.5">Progress (Phys vs Fin)</th>
+              <th className="py-3 px-3.5">Status</th>
+              <th className="py-3 px-3.5 text-right">Inspect</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800/60">
+          <tbody className="divide-y divide-[#E8E4DC]">
             {paginatedWorks.map((work) => {
               const gap = Math.round(work.financial_progress - work.physical_progress);
               return (
                 <tr
                   key={work.work_id}
                   onClick={() => onSelectWork(work.work_id)}
-                  className="hover:bg-slate-800/40 cursor-pointer transition-colors group"
+                  className="hover:bg-[#F7F7F1]/60 cursor-pointer transition-colors group"
                 >
                   {/* Risk Score Pill */}
-                  <td className="py-3 px-3 whitespace-nowrap">
-                    <span className={`inline-block px-2 py-0.5 rounded font-bold text-xs border ${getScoreColor(work.overall_risk_score)}`}>
+                  <td className="py-3 px-3.5 whitespace-nowrap">
+                    <span className={`inline-block px-2.5 py-0.5 rounded-full font-semibold text-xs border ${getScoreColor(work.overall_risk_score)}`}>
                       {work.overall_risk_score}
                     </span>
                   </td>
 
                   {/* Title & ID */}
-                  <td className="py-3 px-3 max-w-[260px]">
-                    <div className="font-semibold text-white group-hover:text-blue-400 transition-colors truncate">
+                  <td className="py-3 px-3.5 max-w-[260px]">
+                    <div className="font-semibold text-[#050505] group-hover:text-[#4B3C32] transition-colors truncate">
                       {work.work_title}
                     </div>
-                    <div className="text-[10px] text-slate-400 font-mono">
+                    <div className="text-[10px] text-[#5E5E5D] font-mono mt-0.5">
                       {work.work_id}
                     </div>
                   </td>
 
                   {/* District */}
-                  <td className="py-3 px-3 text-slate-300 whitespace-nowrap">
+                  <td className="py-3 px-3.5 text-[#5E5E5D] whitespace-nowrap">
                     {work.district}
                   </td>
 
                   {/* Category */}
-                  <td className="py-3 px-3 text-slate-300 whitespace-nowrap">
+                  <td className="py-3 px-3.5 text-[#5E5E5D] whitespace-nowrap">
                     <span className="text-[11px]">{work.work_category}</span>
                   </td>
 
                   {/* Sanctioned Cost */}
-                  <td className="py-3 px-3 text-slate-200 font-mono whitespace-nowrap">
+                  <td className="py-3 px-3.5 text-[#050505] font-mono whitespace-nowrap">
                     ₹{(work.sanctioned_amount / 100000).toFixed(2)}L
                   </td>
 
                   {/* Progress Comparison */}
-                  <td className="py-3 px-3 whitespace-nowrap">
+                  <td className="py-3 px-3.5 whitespace-nowrap">
                     <div className="flex items-center gap-2">
-                      <div className="w-20 bg-slate-800 h-2 rounded-full overflow-hidden flex">
+                      <div className="w-20 bg-[#E8E4DC] h-1.5 rounded-full overflow-hidden flex">
                         <div
                           style={{ width: `${Math.min(work.physical_progress, 100)}%` }}
-                          className="bg-emerald-500 h-full"
+                          className="bg-[#2E8B57] h-full rounded-full"
                           title={`Physical: ${work.physical_progress}%`}
                         />
                       </div>
-                      <span className="text-[11px] font-mono text-slate-300">
+                      <span className="text-[11px] font-mono text-[#5E5E5D]">
                         {Math.round(work.physical_progress)}% / {Math.round(work.financial_progress)}%
                       </span>
                       {gap >= 25 && (
-                        <span className="px-1.5 py-0.2 rounded text-[10px] font-bold bg-red-500/20 text-red-400 border border-red-500/30">
+                        <span className="px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-[#FDF2F2] text-[#C94C4C] border border-[#F2C2C2]">
                           +{gap}% gap
                         </span>
                       )}
@@ -288,26 +288,26 @@ export default function WorksTable({ works, onSelectWork }) {
                   </td>
 
                   {/* Status */}
-                  <td className="py-3 px-3 whitespace-nowrap">
-                    <span className={`px-2 py-0.5 rounded text-[10px] font-medium ${
+                  <td className="py-3 px-3.5 whitespace-nowrap">
+                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-medium border ${
                       work.status === "COMPLETED"
-                        ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                        ? "bg-[#F0F8F4] text-[#2E8B57] border-[#C2E0D0]"
                         : work.status === "STALLED"
-                        ? "bg-red-500/10 text-red-400 border border-red-500/20"
-                        : "bg-blue-500/10 text-blue-400 border border-blue-500/20"
+                        ? "bg-[#FDF2F2] text-[#C94C4C] border-[#F2C2C2]"
+                        : "bg-[#F7F7F1] text-[#4B3C32] border-[#C8BFB3]"
                     }`}>
                       {work.status}
                     </span>
                   </td>
 
                   {/* Action Link */}
-                  <td className="py-3 px-3 text-right whitespace-nowrap">
+                  <td className="py-3 px-3.5 text-right whitespace-nowrap">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         onSelectWork(work.work_id);
                       }}
-                      className="p-1 rounded text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                      className="p-1.5 rounded-lg text-[#5E5E5D] hover:text-[#050505] hover:bg-[#E8E4DC]/50 transition-colors"
                     >
                       <Eye className="w-4 h-4" />
                     </button>
@@ -320,7 +320,7 @@ export default function WorksTable({ works, onSelectWork }) {
       </div>
 
       {/* Pagination Footer */}
-      <div className="flex items-center justify-between pt-4 mt-2 border-t border-slate-800 text-xs text-slate-400">
+      <div className="flex items-center justify-between pt-4 mt-2 border-t border-[#E8E4DC] text-xs text-[#5E5E5D]">
         <div>
           Page {currentPage} of {totalPages}
         </div>
@@ -328,14 +328,14 @@ export default function WorksTable({ works, onSelectWork }) {
           <button
             disabled={currentPage === 1}
             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-            className="p-1 rounded bg-slate-800 text-slate-300 disabled:opacity-30 hover:bg-slate-700"
+            className="p-1.5 rounded-lg bg-[#F7F7F1] border border-[#E8E4DC] text-[#050505] disabled:opacity-40 hover:bg-[#E8E4DC] transition-colors"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
           <button
             disabled={currentPage === totalPages}
             onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-            className="p-1 rounded bg-slate-800 text-slate-300 disabled:opacity-30 hover:bg-slate-700"
+            className="p-1.5 rounded-lg bg-[#F7F7F1] border border-[#E8E4DC] text-[#050505] disabled:opacity-40 hover:bg-[#E8E4DC] transition-colors"
           >
             <ChevronRight className="w-4 h-4" />
           </button>
