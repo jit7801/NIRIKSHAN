@@ -447,9 +447,12 @@ def query_works_from_db(
     if limit is not None and limit > 0:
         query_sql = f"SELECT * FROM works {where_sql} ORDER BY {col} {order} LIMIT ? OFFSET ?;"
         cur.execute(query_sql, params + [limit, offset])
-    else:
-        query_sql = f"SELECT * FROM works {where_sql} ORDER BY {col} {order} OFFSET ?;"
+    elif offset > 0:
+        query_sql = f"SELECT * FROM works {where_sql} ORDER BY {col} {order} LIMIT -1 OFFSET ?;"
         cur.execute(query_sql, params + [offset])
+    else:
+        query_sql = f"SELECT * FROM works {where_sql} ORDER BY {col} {order};"
+        cur.execute(query_sql, params)
 
     rows = cur.fetchall()
     conn.close()
