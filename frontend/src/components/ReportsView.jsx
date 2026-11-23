@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import RiskBadge from './RiskBadge';
 import { Printer, Download, Search, FilterX, Eye, AlertCircle } from 'lucide-react';
 import { useToast } from './Toast';
+import { generateCSVContent, downloadCSVBlob } from '../utils/csvExport';
 
 export default function ReportsView({ works = [], onSelectWork }) {
   const { addToast } = useToast();
@@ -34,25 +35,20 @@ export default function ReportsView({ works = [], onSelectWork }) {
       'Risk Level', 'Primary Signal', 'Ordered Administrative Action', 'Implementing Agency'
     ];
     const rows = flaggedWorks.map((w) => [
-      `"MPLADS/INQ/${w.district || 'GEN'}/${new Date().getFullYear()}/${w.work_id}"`,
-      `"${w.work_id || ''}"`,
-      `"${(w.work_title || '').replace(/"/g, '""')}"`,
-      `"${w.district || ''}, ${w.state || ''}"`,
+      `MPLADS/INQ/${w.district || 'GEN'}/${new Date().getFullYear()}/${w.work_id}`,
+      w.work_id || '',
+      w.work_title || '',
+      `${w.district || ''}, ${w.state || ''}`,
       w.overall_risk_score || 0,
       w.risk_level || '',
-      `"${(w.primary_risk_factor || '').replace(/"/g, '""')}"`,
-      `"${(w.recommended_action || '').replace(/"/g, '""')}"`,
-      `"${(w.implementing_agency || '').replace(/"/g, '""')}"`
+      w.primary_risk_factor || '',
+      w.recommended_action || '',
+      w.implementing_agency || ''
     ]);
 
-    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `MPLADS_Verification_Directives_${new Date().toISOString().slice(0, 10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const filename = `MPLADS_Verification_Directives_${new Date().toISOString().slice(0, 10)}.csv`;
+    const csvContent = generateCSVContent(headers, rows);
+    downloadCSVBlob(filename, csvContent);
     addToast(`Exported ${flaggedWorks.length} administrative orders to CSV.`, 'success');
   };
 

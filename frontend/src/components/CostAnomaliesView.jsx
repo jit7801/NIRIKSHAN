@@ -12,6 +12,7 @@ import {
   AlertCircle 
 } from 'lucide-react';
 import { useToast } from './Toast';
+import { generateCSVContent, downloadCSVBlob } from '../utils/csvExport';
 
 export default function CostAnomaliesView({ works = [], onSelectWork }) {
   const { addToast } = useToast();
@@ -70,11 +71,11 @@ export default function CostAnomaliesView({ works = [], onSelectWork }) {
       const diffPct = Math.round((ratio - 1.0) * 100);
 
       return [
-        `"${w.work_id || ''}"`,
-        `"${(w.work_title || '').replace(/"/g, '""')}"`,
-        `"${w.district || ''}"`,
-        `"${w.state || ''}"`,
-        `"${w.work_category || ''}"`,
+        w.work_id || '',
+        w.work_title || '',
+        w.district || '',
+        w.state || '',
+        w.work_category || '',
         w.sanctioned_amount || 0,
         median,
         `${diffPct}%`,
@@ -84,14 +85,9 @@ export default function CostAnomaliesView({ works = [], onSelectWork }) {
       ];
     });
 
-    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `MPLADS_Cost_Anomalies_${new Date().toISOString().slice(0, 10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const filename = `MPLADS_Cost_Anomalies_${new Date().toISOString().slice(0, 10)}.csv`;
+    const csvContent = generateCSVContent(headers, rows);
+    downloadCSVBlob(filename, csvContent);
     addToast(`Exported ${costAnomalies.length} cost anomaly records to CSV.`, 'success');
   };
 

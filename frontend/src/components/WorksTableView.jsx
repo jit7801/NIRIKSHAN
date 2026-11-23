@@ -24,10 +24,12 @@ import {
   ChevronDown,
   ChevronUp,
   Percent,
-  Check
+  Check,
+  RefreshCw
 } from 'lucide-react';
 import { useToast } from './Toast';
 import { fetchWorks, fetchFilterOptions, fetchSummary } from '../api/client';
+import { generateCSVContent, downloadCSVBlob } from '../utils/csvExport';
 
 export default function WorksTableView({ 
   works = [], 
@@ -285,44 +287,92 @@ export default function WorksTableView({
     }
   };
 
-  const exportCSV = () => {
-    const recordsToExport = paginatedWorks;
-    if (recordsToExport.length === 0) {
+  const [isExporting, setIsExporting] = useState(false);
+
+  const exportCSV = async () => {
+    if (isExporting) return;
+
+    if (serverTotal === 0) {
       addToast('No records available to export.', 'warning');
       return;
     }
 
-    const headers = [
-      'Work ID', 'Title', 'Category', 'State', 'District', 'Sanctioned Amount (INR)',
-      'Actual Expenditure (INR)', 'Physical Progress (%)', 'Financial Progress (%)',
-      'Unified Risk Score', 'Risk Level', 'Primary Signal', 'Status', 'Agency'
-    ];
-    const rows = recordsToExport.map((w) => [
-      `"${w.work_id || ''}"`,
-      `"${(w.work_title || '').replace(/"/g, '""')}"`,
-      `"${w.work_category || ''}"`,
-      `"${w.state || ''}"`,
-      `"${w.district || ''}"`,
-      w.sanctioned_amount || 0,
-      w.actual_expenditure || 0,
-      w.physical_progress || 0,
-      w.financial_progress || 0,
-      w.overall_risk_score || 0,
-      w.risk_level || '',
-      `"${(w.primary_risk_factor || '').replace(/"/g, '""')}"`,
-      w.status || '',
-      `"${(w.implementing_agency || '').replace(/"/g, '""')}"`
-    ]);
+    setIsExporting(true);
+    addToast(`Preparing export for ${serverTotal.toLocaleString()} records...`, 'info');
 
-    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `MPLADS_Works_Registry_${new Date().toISOString().slice(0, 10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    addToast(`Exported ${recordsToExport.length} projects to CSV successfully.`, 'success');
+    try {
+      let recordsToExport = [];
+
+      // If total filtered records already fit in current local serverWorks page
+      if (serverTotal <= serverWorks.length && serverWorks.length > 0) {
+        recordsToExport = serverWorks;
+      } else {
+        // Fetch all matching records iteratively via API pagination without exceeding serverless payload limits
+        const BATCH_SIZE = 500;
+        let offset = 0;
+        const filterParams = {
+          search: search.trim() || undefined,
+          state: selectedState || undefined,
+          district: selectedDistrict || undefined,
+          category: selectedCategory || undefined,
+          risk_level: selectedRisk || undefined,
+          status: selectedStatus || undefined,
+          sort_by: sortBy,
+          sort_order: sortOrder
+        };
+
+        while (offset < serverTotal) {
+          const res = await fetchWorks({
+            ...filterParams,
+            limit: BATCH_SIZE,
+            offset: offset
+          });
+
+          const batch = res.items || [];
+          if (batch.length === 0) break;
+          recordsToExport.push(...batch);
+          offset += batch.length;
+          if (batch.length < BATCH_SIZE) break;
+        }
+      }
+
+      if (recordsToExport.length === 0) {
+        addToast('No records were retrieved to export.', 'warning');
+        return;
+      }
+
+      const headers = [
+        'Work ID', 'Title', 'Category', 'State', 'District', 'Sanctioned Amount (INR)',
+        'Actual Expenditure (INR)', 'Physical Progress (%)', 'Financial Progress (%)',
+        'Unified Risk Score', 'Risk Level', 'Primary Signal', 'Status', 'Agency'
+      ];
+      const rows = recordsToExport.map((w) => [
+        w.work_id || '',
+        w.work_title || '',
+        w.work_category || '',
+        w.state || '',
+        w.district || '',
+        w.sanctioned_amount || 0,
+        w.actual_expenditure || 0,
+        w.physical_progress || 0,
+        w.financial_progress || 0,
+        w.overall_risk_score || 0,
+        w.risk_level || '',
+        w.primary_risk_factor || '',
+        w.status || '',
+        w.implementing_agency || ''
+      ]);
+
+      const filename = `MPLADS_Works_Registry_${new Date().toISOString().slice(0, 10)}.csv`;
+      const csvContent = generateCSVContent(headers, rows);
+      downloadCSVBlob(filename, csvContent);
+      addToast(`Exported all ${recordsToExport.length.toLocaleString()} projects to CSV successfully.`, 'success');
+    } catch (err) {
+      console.error('CSV Export Error:', err);
+      addToast(`CSV Export failed: ${err.message}`, 'error');
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   return (
@@ -379,12 +429,23 @@ export default function WorksTableView({
 
           <button
             onClick={exportCSV}
-            className="btn-secondary flex items-center gap-1.5 py-2 px-3.5 text-xs font-medium rounded-xl hover:bg-[#F7F7F1]"
+            disabled={isExporting}
+            className="btn-secondary flex items-center gap-1.5 py-2 px-3.5 text-xs font-medium rounded-xl hover:bg-[#F7F7F1] disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
             title="Download CSV report of filtered works"
           >
-            <Download className="w-3.5 h-3.5 text-[#AA896C]" />
-            <span className="hidden xs:inline">Export CSV</span>
-            <span className="xs:hidden">Export</span>
+            {isExporting ? (
+              <>
+                <RefreshCw className="w-3.5 h-3.5 text-[#AA896C] animate-spin" />
+                <span className="hidden xs:inline">Exporting...</span>
+                <span className="xs:hidden">...</span>
+              </>
+            ) : (
+              <>
+                <Download className="w-3.5 h-3.5 text-[#AA896C]" />
+                <span className="hidden xs:inline">Export CSV</span>
+                <span className="xs:hidden">Export</span>
+              </>
+            )}
           </button>
         </div>
       </div>
